@@ -143,7 +143,7 @@ require('./components/header.php');
   <h2 class="text-4xl font-bold mb-4">Commencez votre transformation</h2>
   <p class="mb-8 text-gray-300">Rejoignez la meilleure plateforme de coaching sportif</p>
   <a href="#" class="bg-accent px-8 py-4 rounded-lg font-semibold hover:bg-green-600 transition">
-    S’inscrire maintenant
+    S'inscrire maintenant
   </a>
 </section>
 

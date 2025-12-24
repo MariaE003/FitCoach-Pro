@@ -1,6 +1,6 @@
 <?php
 $RolePage="client";
-require './session.php';
+require '../session.php';
 require './connect.php';
 
 $idcoach=$_GET["idProfilCoach"];

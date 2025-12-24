@@ -15,6 +15,7 @@ class DataBase{
             // echo "done";
             return self::$pdo;
             }
+            return self::$pdo;//pour eviter erreur du pdo null
         }catch(PDOException $e){
             die("connection faild:".$e->getMessage());
         }

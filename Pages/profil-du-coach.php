@@ -1,6 +1,6 @@
 <?php
 $RolePage="coach";
-require './session.php';
+require '../session.php';
 require './connect.php';
 
 $id_user=$_SESSION["user_id"];

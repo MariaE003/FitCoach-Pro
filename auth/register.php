@@ -1,5 +1,17 @@
 <?php
-require "../connect.php";
+require '../session.php';
+
+
+// require __DIR__. '../../dataBase/connect.php';
+require_once '../dataBase/Connect.php';
+require_once __DIR__ . '/../classes/User.php';
+require_once __DIR__ . '/../classes/client.php';
+require_once __DIR__ . '/../classes/coach.php';
+
+
+
+// require "../connect.php";
+
 if (isset($_POST["inscrir"])) {
   #vilider les champs
   if (!empty($_POST["firstName"]) && !empty($_POST["lastName"]) && !empty($_POST["email"]) && !empty($_POST["phone"]) && !empty($_POST["password"]) && !empty($_POST["confirmPassword"])) {
@@ -12,27 +24,72 @@ if (isset($_POST["inscrir"])) {
     $role=$_POST["role"];
     // echo $role;
 
-    $passwordHasher=password_hash($password,PASSWORD_BCRYPT);
+    // $passwordHasher=password_hash($password,PASSWORD_BCRYPT);
 
-    $sqlRequette=$connect->prepare("INSERT INTO users(email, password, role) VALUES (?,?,?)");
-    $sqlRequette->bind_param("sss",$email,$passwordHasher,$role);
+    $user=new User();
+    $user->setEmail($email);
+    $user->setRole($role);
+    $user->setPassword($password);
+    $id=$user->register();//pour eviter erreur du pdo null
+    echo $id;
+    var_dump($id);
+    if ($id) {
+      // echo "insersiont resusiire".$id;
+      if ($user->getRole()==="client") {
+        $client=new Client();
+        $client->setId($id);//pour eviter erreur du pdo null
+        $client->setNom($lastName);
+        $client->setPrenom($firstname);
+        $client->setTelephone($phone);
+        $client->registerClient();
+      }
+      $leRole=$user->getRole();
+      var_dump($leRole);
+      echo  $leRole;
+      if ($leRole==="coach") {
+        echo "je suis coach";
+        $coach=new Coach();
+        $coach->setNom($lastName);
+        $coach->setPrenom($firstname);
+        $coach->setPrenom($firstname);
+        // $coach->registerCoach();
+        // $coach->setPassword($password);
+        // $coach->setEmail($email);
+
+        // $coach->setAnneeExperience();
+        // $coach->setBio();
+        // $coach->setPrix();
+        // $coach->setPhoto();
+        // $coach->setSpecialite();
+        // $coach->setcertif();
+
+        $coach->registerCoach($id);
+      }
+
+      header("Location:login.php");
+      exit();
+
+
+    }
+    // $sqlRequette=$connect->prepare("INSERT INTO users(email, password, role) VALUES (?,?,?)");
+    // $sqlRequette->bind_param("sss",$email,$passwordHasher,$role);
     // $sqlRequette->execute();
 
-    if ($sqlRequette->execute()){
-      $userId=$connect->insert_id;
-      if ($role==="client") {
-      $sqlRequetteClient=$connect->prepare("INSERT INTO client(id_user, nom, prenom, telephone,email) VALUES (?,?,?,?,?)");
-      $sqlRequetteClient->bind_param("sssss",$userId,$lastName,$firstname,$phone,$email);
-      $sqlRequetteClient->execute();
-    }
-    if ($role==="coach") {
-      $sqlRequetteClient=$connect->prepare("INSERT INTO coach(id_user, nom, prenom, telephone) VALUES (?,?,?,?)");
-      $sqlRequetteClient->bind_param("ssss",$userId,$lastName,$firstname,$phone);
-      $sqlRequetteClient->execute();
-    }
-    header("Location:login.php");
-    exit();
-    }
+    // if ($sqlRequette->execute()){
+    //   // $userId=$connect->insert_id;
+    //   if ($role==="client") {
+    //   $sqlRequetteClient=$connect->prepare("INSERT INTO client(id_user, nom, prenom, telephone,email) VALUES (?,?,?,?,?)");
+    //   $sqlRequetteClient->bind_param("sssss",$id,$lastName,$firstname,$phone,$email);
+    //   $sqlRequetteClient->execute();
+    // }
+    // if ($role==="coach") {
+    //   $sqlRequetteClient=$connect->prepare("INSERT INTO coach(id_user, nom, prenom, telephone) VALUES (?,?,?,?)");
+    //   $sqlRequetteClient->bind_param("ssss",$id,$lastName,$firstname,$phone);
+    //   $sqlRequetteClient->execute();
+    // }
+    // header("Location:login.php");
+    // exit();
+    // }
 
   }
 }
@@ -51,7 +108,7 @@ if (isset($_POST["inscrir"])) {
 <body class="bg-gray-50 min-h-screen flex flex-col">
   <!-- Navigation -->
   <?php
-require('../components/header.php');
+require('../Pages/components/header.php');
 ?>
 
   <!-- Register Section -->
@@ -146,7 +203,7 @@ require('../components/header.php');
 
   <!-- Footer -->
   <?php
-require('../components/footer.php');
+require('../Pages//components/footer.php');
 ?>
 
   <script>

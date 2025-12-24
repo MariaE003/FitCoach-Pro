@@ -1,7 +1,9 @@
 <?php
 session_start();
-require_once '/dataBase/connect.php';
-require '/classes/user.php';
+require_once '../dataBase/connect.php';
+require_once '../classes/User.php';
+require_once '../classes/Coach.php';
+// require '../session.php';
 $erreur="";
 
 
@@ -49,12 +51,33 @@ if (isset($_POST["Seconnecter"])) {
 //       $user=$Result->fetch_assoc();
 //       if (password_verify($password,$user['password'])) {
 //         $_SESSION["user_id"]=$user['id'];
-//         $_SESSION["role"]=$user['role'];
+        $_SESSION["user_id"]=$User->getId();
+        $_SESSION["role"]=$User->getRole();
+        // echo $_SESSION["role"];
+        $role=$User->getRole();
         
-//         $req=$connect->prepare("SELECT c.experience_en_annee FROM coach c
-//         INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee IS NULL
-//         ");
-//         // if($req->execute())
+        // $req=$User->pdo->prepare("SELECT c.experience_en_annee FROM coach c
+        // INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee IS NULL and u.id=?
+        // ");
+        // $req->execute([
+        //   $User->getId()
+        // ]);
+        // $test=$req->fetch(PDO::FETCH_ASSOC);
+        $coach=new Coach();
+        $test=$coach->completerProfilCoach($User->getId());
+        echo $test;
+        if ($test){
+          // print_r( $test["experience_en_annee"]);
+          if ($role==="coach") {
+          //   echo 'hi my coach';
+            header("Location: addProfilCoach.php");
+            exit();
+          }
+          header("Location: ../index.php");
+          exit();
+          
+        }
+        // if($req->execute())
 //         // si le role est coach il Doit completer leur profil SI IL NA PAS COMPLETER ENCOR
 //         if ($user['role']==="coach" && $req->execute()){
 //         header("Location: addProfilCoach.php");
@@ -90,7 +113,7 @@ if (isset($_POST["Seconnecter"])) {
 
   <!-- Navigation -->
   <?php
-  require('../components/header.php');
+  require('../Pages/components/header.php');
   ?>
 
   <!-- Login Section -->
@@ -165,7 +188,7 @@ if (isset($_POST["Seconnecter"])) {
 
   <!-- Footer -->
   <?php
-require('../components/footer.php')
+require('../Pages/components/footer.php')
 ?>
 
   <script>

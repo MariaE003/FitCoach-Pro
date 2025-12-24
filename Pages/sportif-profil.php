@@ -1,7 +1,7 @@
 <?php
 $RolePage="client";
 require './connect.php';
-require './session.php';
+require '../session.php';
 
 $id_user=$_SESSION["user_id"];
 $req=$connect->prepare("select * from client where id_user=?");

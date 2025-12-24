@@ -1,27 +1,149 @@
 <?php
 require_once '../dataBase/connect.php';
-require_once './user.php';
-class Coach extends User{
-    private int  $id;
-    private string  $nom;
-    private string  $prenom;
-    private string  $annee_experience;
-    private string  $Bio;
-    private float   $prix;
-    private string  $photo;
-    private string  $telephone;
-    private string  $specialite;
-    private int $id_user;
+require_once  __DIR__ .'/User.php';
 
+class Coach extends User{
+    // private int  $id;
+    private string  $nom='';
+    private string  $prenom='';
+    private int  $annee_experience = 0;
+    private string  $bio='';
+    private float   $prix=0;
+    private string  $photo='';
+    private string  $telephone='';
+    private array  $specialite=[];
+    private array $certif=[];
+    // certif
+    // private int $id_user;
+    private int $coach_id;
     // pour la connexion avec db
-    private $pdo;
+    // private $pdo;
 
     function __construct(){
         parent::__construct();
-        $this->pdo=DataBase::connect();
-        $this->id_user=$id_user;
-        $this->id=$id;
-        // $this->nom=$nom; => en met ca dans les setter
+    }
+
+    public function getNom(){return $this->nom;}
+    public function setNom(string $nom){$this->nom=$nom;}
+
+    public function getPrenom(){ return $this->prenom; }
+    public function setPrenom(string $prenom){ $this->prenom = $prenom; }
+
+    public function getAnneeExperience(){ return $this->annee_experience; }
+    public function setAnneeExperience(int $annee){ $this->annee_experience = $annee; }
+
+    public function getBio(){ return $this->bio; }
+    public function setBio(string $bio){ $this->bio = $bio;}
+
+    public function getPrix(){ return $this->prix; }
+    public function setPrix(float $prix){ $this->prix = $prix; }
+
+    public function getPhoto(){ return $this->photo; }
+    public function setPhoto(string $photo){ $this->photo = $photo; }
+
+    public function getTelephone(){ return $this->telephone; }
+    public function setTelephone(string $tel){ $this->telephone = $tel; }
+
+    public function getSpecialite(){ return $this->specialite; }
+    public function setSpecialite(string $spec){ $this->specialite[] = $spec; }
+
+    public function getcertif(){ return $this->certif; }
+    public function setcertif(string $certif){ $this->certif[] = $certif; }
+
+    public function registerCoach(int $idUser){
+        $this->role='coach';
+        // if ($this->register()) { //un erreur du id dial user li tinsera mkich
+           $req=$this->pdo->prepare("INSERT into coach(id_user, nom, prenom, telephone, experience_en_annee,bio, photo,prix) values(?,?,?,?,?,?,?,?)");
+           $req->execute([
+            // $this->id,
+            $idUser,
+            $this->nom,
+            $this->prenom,
+            $this->telephone,
+            $this->annee_experience,
+            $this->bio,
+            $this->photo,
+            $this->prix,
+           ]);
+           // return false;
+           $this->coach_id=$this->pdo->lastInsertId();
+           // $this->coach_id=$coach_id;
+           return true;
+        // }
+        // return false;
+    }
+    public function updateProfilCoach(int $idUser, int $experience, string $bio, float $prix, string $photo){
+        $req = $this->pdo->prepare("
+            UPDATE coach
+            SET experience_en_annee = ?, bio = ?, prix = ?, photo = ?
+            WHERE id_user = ?
+        ");
+        return $req->execute([$experience, $bio, $prix, $photo, $idUser]);
+    }
+    public function virifierProfilCoach(int $id){
+        $req=$this->pdo->prepare("SELECT * FROM coach c
+        INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee=0 and u.id=?
+        ");
+        // erreur => 0 dans experience 😒😒
+        $req->execute([
+          $id
+        ]);
+        $test=$req->fetch(PDO::FETCH_ASSOC);
+        if ($test) {
+            return $test;
+        }
+
+        // else{
+        //     echo 'non trouver';
+        // }
+        
+    }
+    // inserer des specialite
+    public function saveSpecialite(){
+        foreach ($this->specialite as $spec) {
+        $req=$this->pdo->prepare("INSERT INTO specialite (nom_specialite) VALUES(?)");
+        $req->execute([
+            $spec
+        ]);
+        $spec_id=$this->pdo->lastInsertId();
+
+        // remlpir table associ
+        $req1=$this->pdo->prepare("INSERT into specialite_coach(id_coach, id_specialite) VALUES(?,?)");
+        $req1->execute([
+            $this->coach_id,$spec_id
+        ]);
+    }
+    
+}
+public function saveCertif(){
+    foreach($this->certif as $cert){
+        $req2=$this->pdo->prepare("INSERT into certification (id_coach, nom_certif, annee, etablissement) values(?,?,?,?)");
+        $req2->execute([
+            $this->coach_id,
+            $cert["nom_certif"],
+            $cert["annee"],
+            $cert["etablissement"],
+        ]);
     }
 }
+
+// id du coach inserer
+public function CoachConnId(int $userid){
+    $req=$this->pdo->prepare("SELECT id FROM coach WHERE id_user=?");
+    $req->execute([
+        $userid        
+    ]);
+
+    $req->fetch(PDO::FETCH_ASSOC);
+    if ($req) {
+        return $req;
+        
+    }
+}
+
+
+}
+
 ?>
+
+
