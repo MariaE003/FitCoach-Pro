@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 require '../dataBase/connect.php';
 require '../classes/User.php';
 require '../classes/Coach.php';
@@ -20,9 +20,9 @@ if (empty($_SESSION['csrf_token'])) {
 if (isset($_POST["Seconnecter"])) {
 
 //   // Verifier csrf token
-  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("Erreur CSRF : formulaire invalide !");
-    }
+  // if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+  //       die(" formulaire invalide !");
+  //   }
 //   #vilider les champs
   if (!empty($_POST["email"]) && !empty($_POST["password"])) {
     $email=$_POST["email"];
@@ -66,7 +66,7 @@ if (isset($_POST["Seconnecter"])) {
         // $test=$req->fetch(PDO::FETCH_ASSOC);
         $coach=new Coach();
         $test=$coach->virifierProfilCoach($User->getId());
-        echo $test;
+        // echo $test;
         if ($test){
           // print_r( $test["experience_en_annee"]);
           if ($role==="coach") {
@@ -80,24 +80,31 @@ if (isset($_POST["Seconnecter"])) {
           }
           
         }
-        // if($req->execute())
-//         // si le role est coach il Doit completer leur profil SI IL NA PAS COMPLETER ENCOR
-//         if ($user['role']==="coach" && $req->execute()){
-//         header("Location: addProfilCoach.php");
-//         exit();
-//         }
 
-//         header("Location: ../index.php");
-//         exit();
-//       }else{
-//         $erreur="mot de passe incorrect !";
-//       }
-//     }else{
-//         $erreur="email incorrect !";
-//     }    
+        // $idDuUser=$_SESSION["user_id"];
+        // $coach=new Coach();
+        $test1=$coach->virifierSiCoachCompleterProfil($User->getId());
 
-  }
+        if(!$test1)
+        // si le role est coach il Doit completer leur profil SI IL NA PAS COMPLETER ENCOR
+        if ($user['role']==="coach"){
+        header("Location: /FitCoach-Pro/auth/addProfilCoach.php");
+        exit();
+        }
+
+        header("Location: /FitCoach-Pro/index.php");
+        exit();
+      }
+    //   else{
+    //     $erreur="mot de passe incorrect !";
+    //   }
+    // }else{
+    //     $erreur="email incorrect !";
+    // }    
+  // }
+
 }
+
 
 
 ?>

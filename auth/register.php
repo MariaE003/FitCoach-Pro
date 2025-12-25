@@ -1,5 +1,5 @@
 <?php
-require '../session.php';
+// require '../session.php';
 
 
 // require __DIR__. '../../dataBase/connect.php';

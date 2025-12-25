@@ -141,18 +141,35 @@ public function saveCertif(){
 }
 
 // id du coach inserer
-public function CoachConnId(int $userid){
-    $req=$this->pdo->prepare("SELECT id FROM coach WHERE id_user=?");
+// public function CoachConnId(int $userid){
+//     $req=$this->pdo->prepare("SELECT id FROM coach WHERE id_user=?");
+//     $req->execute([
+//         $userid        
+//     ]);
+
+//     $res1=$req->fetch(PDO::FETCH_ASSOC);
+//     // echo $res1["id"];
+//     if ($res1) {
+//         $coachId=$this->coach_id = $res1['id'];
+//         return $coachId;
+        
+//     }
+//     return false;
+// }
+
+public function virifierSiCoachCompleterProfil(int $userid){
+    // $req=$this->pdo->prepare("SELECT id FROM coach WHERE id_user=?");
+    $req=$this->pdo->prepare("SELECT experience_en_annee FROM coach WHERE id_user=?");
     $req->execute([
         $userid        
     ]);
 
     $res1=$req->fetch(PDO::FETCH_ASSOC);
     // echo $res1["id"];
-    if ($res1) {
-        $coachId=$this->coach_id = $res1['id'];
-        return $coachId;
-        
+    if ($res1){
+        // $coachId=$this->coach_id = $res1['id'];
+        return $res1["experience_en_annee"];
+        // return true;
     }
     return false;
 }

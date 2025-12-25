@@ -31,6 +31,7 @@ class User{
         $req1=$this->pdo->prepare("SELECT id from users where email=?");
         
         $req1->execute([$email]);
+        // 
         return $req1->fetch(PDO::FETCH_ASSOC) !== false;
     }
 
