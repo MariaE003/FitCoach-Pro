@@ -1,7 +1,7 @@
 <?php
-require_once './dataBase/connect.php';
+// require_once './dataBase/connect.php';
 // $pdo=DataBase::connect();
-// require_once './session.php';//nb
+require './session.php';//nb
 
 ?>
 

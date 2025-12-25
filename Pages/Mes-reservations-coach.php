@@ -1,7 +1,7 @@
 <?php
 $RolePage="coach";
 require '../session.php';
-require './connect.php';
+require '../dataBase/connect.php';
 // if (isset($_GET["idProfilCoach"])) {
 //   $idcoach=$_GET["idProfilCoach"];
 // }

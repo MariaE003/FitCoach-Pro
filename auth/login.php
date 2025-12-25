@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../dataBase/connect.php';
-require_once '../classes/User.php';
-require_once '../classes/Coach.php';
+require '../dataBase/connect.php';
+require '../classes/User.php';
+require '../classes/Coach.php';
 // require '../session.php';
 $erreur="";
 
@@ -54,7 +54,8 @@ if (isset($_POST["Seconnecter"])) {
         $_SESSION["user_id"]=$User->getId();
         $_SESSION["role"]=$User->getRole();
         // echo $_SESSION["role"];
-        $role=$User->getRole();
+        $role=$_SESSION["role"];
+        // echo $role;
         
         // $req=$User->pdo->prepare("SELECT c.experience_en_annee FROM coach c
         // INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee IS NULL and u.id=?
@@ -64,17 +65,19 @@ if (isset($_POST["Seconnecter"])) {
         // ]);
         // $test=$req->fetch(PDO::FETCH_ASSOC);
         $coach=new Coach();
-        $test=$coach->completerProfilCoach($User->getId());
+        $test=$coach->virifierProfilCoach($User->getId());
         echo $test;
         if ($test){
           // print_r( $test["experience_en_annee"]);
           if ($role==="coach") {
-          //   echo 'hi my coach';
-            header("Location: addProfilCoach.php");
+            // echo 'hi my coach';
+            header("Location: /FitCoach-Pro/auth/addProfilCoach.php");
             exit();
           }
-          header("Location: ../index.php");
-          exit();
+          if($role==="client"){
+            header("Location:  /FitCoach-Pro/index.php");
+            exit();
+          }
           
         }
         // if($req->execute())

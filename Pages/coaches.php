@@ -1,7 +1,7 @@
 <?php
 $RolePage="client";
 require '../session.php';
-require './connect.php';
+require '../dataBase/connect.php';
 
 
 

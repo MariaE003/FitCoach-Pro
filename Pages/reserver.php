@@ -1,7 +1,7 @@
 <?php
 $RolePage="client";
 require '../session.php';
-require './connect.php';
+require '../dataBase/connect.php';
 
 $id_user=$_SESSION["user_id"];
 // echo $id_user;

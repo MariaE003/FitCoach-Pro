@@ -48,7 +48,7 @@ class Coach extends User{
     public function setSpecialite(string $spec){ $this->specialite[] = $spec; }
 
     public function getcertif(){ return $this->certif; }
-    public function setcertif(string $certif){ $this->certif[] = $certif; }
+    public function setcertif(array $certif){ $this->certif[] = $certif; }
 
     public function registerCoach(int $idUser){
         $this->role='coach';
@@ -72,40 +72,53 @@ class Coach extends User{
         // }
         // return false;
     }
-    public function updateProfilCoach(int $idUser, int $experience, string $bio, float $prix, string $photo){
-        $req = $this->pdo->prepare("
-            UPDATE coach
-            SET experience_en_annee = ?, bio = ?, prix = ?, photo = ?
-            WHERE id_user = ?
-        ");
-        return $req->execute([$experience, $bio, $prix, $photo, $idUser]);
-    }
     public function virifierProfilCoach(int $id){
-        $req=$this->pdo->prepare("SELECT * FROM coach c
-        INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee=0 and u.id=?
-        ");
+        $req=$this->pdo->prepare("SELECT * FROM coach c INNER JOIN users u ON u.id=c.id_user WHERE c.id_user=? ");
         // erreur => 0 dans experience 😒😒
+        // experience_en_annee=0 and 
         $req->execute([
-          $id
+            $id
         ]);
         $test=$req->fetch(PDO::FETCH_ASSOC);
+        // echo "dxcf";
         if ($test) {
-            return $test;
+            // echo $test["nom"];
+            return $test["id"];
         }
-
-        // else{
-        //     echo 'non trouver';
-        // }
         
-    }
+        // else{
+            //     echo 'non trouver';
+            // }
+            
+        }
+        public function updateProfilCoach(int $idUser, int $experience, string $bio, float $prix, string $photo){
+            $req = $this->pdo->prepare("
+                UPDATE coach
+                SET id_user=?, experience_en_annee = ?, bio = ?, prix = ?, photo = ?
+                WHERE id_user = ?
+            ");
+            return $req->execute([$idUser,$experience, $bio, $prix, $photo,$idUser]);
+        }
     // inserer des specialite
     public function saveSpecialite(){
         foreach ($this->specialite as $spec) {
-        $req=$this->pdo->prepare("INSERT INTO specialite (nom_specialite) VALUES(?)");
-        $req->execute([
-            $spec
-        ]);
-        $spec_id=$this->pdo->lastInsertId();
+
+        $req = $this->pdo->prepare("SELECT id FROM specialite WHERE nom_specialite=?");
+        $req->execute([$spec]);
+        $test = $req->fetch(PDO::FETCH_ASSOC);
+
+        // if ($test) {
+            $spec_id = $test['id'];
+        // } else {
+            $req1 = $this->pdo->prepare("INSERT INTO specialite (nom_specialite) VALUES(?)");
+            $req1->execute([$spec]);
+            $spec_id = $this->pdo->lastInsertId();
+        // }
+        // $req=$this->pdo->prepare("INSERT INTO specialite (nom_specialite) VALUES(?)");
+        // $req->execute([
+        //     $spec
+        // ]);
+        // $spec_id=$this->pdo->lastInsertId();
 
         // remlpir table associ
         $req1=$this->pdo->prepare("INSERT into specialite_coach(id_coach, id_specialite) VALUES(?,?)");
@@ -120,7 +133,7 @@ public function saveCertif(){
         $req2=$this->pdo->prepare("INSERT into certification (id_coach, nom_certif, annee, etablissement) values(?,?,?,?)");
         $req2->execute([
             $this->coach_id,
-            $cert["nom_certif"],
+            $cert["nom_certif"],//nom
             $cert["annee"],
             $cert["etablissement"],
         ]);
@@ -134,11 +147,14 @@ public function CoachConnId(int $userid){
         $userid        
     ]);
 
-    $req->fetch(PDO::FETCH_ASSOC);
-    if ($req) {
-        return $req;
+    $res1=$req->fetch(PDO::FETCH_ASSOC);
+    // echo $res1["id"];
+    if ($res1) {
+        $coachId=$this->coach_id = $res1['id'];
+        return $coachId;
         
     }
+    return false;
 }
 
 

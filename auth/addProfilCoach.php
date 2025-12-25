@@ -10,7 +10,20 @@ require_once __DIR__ . '/../classes/coach.php';
 //     exit();
 // }
 
+// echo '<pre>';
+// var_dump($_SESSION);
+// echo '</pre>';
+//     echo $_SESSION["user_id"];
 
+$id_user=$_SESSION["user_id"];
+// echo $id_user;
+$coach=new Coach();
+// $IsExist=$coach->virifierProfilCoach($id_user);
+// echo $IsExist;
+// var_dump($IsExist);
+
+// $tes=$coach->CoachConnId($id_user);
+//       echo $tes;
 if (isset($_POST["submitProfil"])) {
     //les champs du coach
     $experience=$_POST["experience"];
@@ -31,11 +44,35 @@ if (isset($_POST["submitProfil"])) {
     //   $user_id=$_SESSION['user_id'];
     // }
     
-    // $Coach=new User();
-    // $idUser=$Coach->getId();
-    // echo $idUser;
+    $coach=new Coach();
+    $IsExist=$coach->virifierProfilCoach($id_user);
+    echo $IsExist;
+    if ($IsExist) {
+      $coach->updateProfilCoach($id_user,$experience,$bio,$prix,$photo);
+      
+      $tes=$coach->CoachConnId($id_user);;
+      echo $tes;
+      
+      foreach($specialites as $spe){
 
-    echo  $_SESSION["user_id"];
+        $coach->setSpecialite($spe);
+
+      }
+      
+      for ($i=0; $i <count($cert["nom"]) ; $i++) { 
+        
+        $coach->setCertif([
+            'nom_certif'=>$cert["nom"][$i],
+            'annee'=>$cert["annee"][$i],
+            'etablissement'=>$cert["etablissement"][$i],
+          ]);
+
+      }
+      $coach->saveSpecialite();
+      $coach->saveCertif();
+    }
+
+    
 
 
 
@@ -88,7 +125,7 @@ if (isset($_POST["submitProfil"])) {
     //     $reqcertif->execute();
     // }
 
-    header('Location: ../coach-dashboard.php');
+    header('Location:  /FitCoach-Pro/Pages/coach-dashboard.php');
 
 }
 ?>

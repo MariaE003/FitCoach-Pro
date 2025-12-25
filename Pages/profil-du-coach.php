@@ -1,7 +1,7 @@
 <?php
 $RolePage="coach";
 require '../session.php';
-require './connect.php';
+require '../dataBase/connect.php';
 
 $id_user=$_SESSION["user_id"];
 // id coach connecter

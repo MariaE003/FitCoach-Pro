@@ -51,7 +51,7 @@ if (isset($_POST["inscrir"])) {
         $coach=new Coach();
         $coach->setNom($lastName);
         $coach->setPrenom($firstname);
-        $coach->setPrenom($firstname);
+        $coach->setTelephone($phone);
         // $coach->registerCoach();
         // $coach->setPassword($password);
         // $coach->setEmail($email);
