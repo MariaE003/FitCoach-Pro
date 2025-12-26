@@ -3,32 +3,17 @@ $RolePage="client";
 require '../session.php';
 require '../dataBase/connect.php';
 
+require '../classes/Coach.php';
 
 
-// group_concat => concatener les valeur dans une seul chaines
+$coachObj = new Coach();
+$coachs = $coachObj->tousCoach();
 
-$reqCoach=$connect->prepare('SELECT c.id,c.*,GROUP_CONCAT(s.nom_specialite SEPARATOR", ") as specialite FROM coach c
-
-                              inner join specialite_coach sc on c.id=sc.id_coach
-
-                              inner join specialite s on s.id=sc.id_specialite
-                              group by c.id
-                              
-  ');
-
-if ($reqCoach->execute()) {
-  # code...
-  $res=$reqCoach->get_result();
-  $coach=$res->fetch_all(MYSQLI_ASSOC);
-
-  // var_dump($coach["nom_specialite"]);
-
-}
-
-// foreach($coach as $coa){
-// $coa=[];
-//   echo $coa[]["nom_specialite"];
+// affichage
+// foreach($coachs as $coa){
+//     echo $coa['nom'].' '.$coa['prenom'].' - '.$coa['specialite'].'<br>';
 // }
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -59,7 +44,8 @@ if ($reqCoach->execute()) {
 
 <!-- NAVBAR -->
 <?php
-require('./components/header.php');
+// require('/FitCoach-Pro/Pages/components/header.php');
+
 ?>
 
 <!-- PAGE HEADER -->
@@ -105,7 +91,7 @@ require('./components/header.php');
 
     <!-- CARD -->
     <?php
-    foreach($coach as $coa){
+    foreach($coachs as $coa){
     // var_dump($coa["photo"]);
 
     ?>
@@ -158,7 +144,8 @@ require('./components/header.php');
 
 <!-- FOOTER -->
 <?php
-require('./components/footer.php')
+// require('/FitCoach-Pro/Pages/components/footer.php');
+
 ?>
 
 

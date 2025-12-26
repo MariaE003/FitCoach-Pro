@@ -161,7 +161,7 @@ if (isset($_POST["save"])) {
   <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
 
     <!-- Sidebar dashboard -->
-   <?php   require './components/aside.php';   ?>
+   <?php   require('/FitCoach-Pro/Pages/components/aside.php');   ?>
 
     <!-- Profil Main Content -->
     <div class="md:col-span-3 flex flex-col space-y-6">
@@ -265,7 +265,7 @@ if (isset($_POST["save"])) {
     </div>
   </div>
 </section>
-<?php require('./components/footer.php'); ?>
+<?php require('/FitCoach-Pro/Pages/components/footer.php'); ?>
 
 <script>
 function addSpecialite(){

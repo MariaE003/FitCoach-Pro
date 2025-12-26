@@ -102,7 +102,8 @@ $nbr=$res->fetch_assoc();
 
 <!-- NAVBAR -->
 <?php
-require('./components/header.php');
+require('/FitCoach-Pro/Pages/components/header.php');
+
 
 // foreach($profil as $prof){
 ?>
@@ -263,7 +264,8 @@ require('./components/header.php');
 }else{
   header("Location: ./index.php");
 }
-require('./components/footer.php')
+require('/FitCoach-Pro/Pages/components/footer.php');
+
 ?>
 
 

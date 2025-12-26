@@ -67,7 +67,8 @@ $ProchaineRe=$reqValideD->get_result()->fetch_assoc();
 
   <!-- Navigation -->
  <?php
-require('./components/header.php')
+require('/FitCoach-Pro/Pages/components/header.php');
+
 ?>
 
   <!-- Dashboard Content -->
@@ -196,7 +197,8 @@ require('./components/header.php')
 
   <!-- Footer -->
   <?php
-require('./components/footer.php')
+require('/FitCoach-Pro/Pages/components/footer.php');
+
 ?>
 
 </body>

@@ -43,6 +43,23 @@ class Client extends User{
         return false;
         
     }
+
+    public function leClientConne(int $id){
+        $req=$this->pdo->prepare("SELECT * FROM client  WHERE id_user=?");
+        
+        $req->execute([
+            $id
+        ]);
+        $test=$req->fetch(PDO::FETCH_ASSOC);
+        // var_dump($test);
+        // echo "dxcf";
+        if ($test) {
+            // echo $test["nom"];
+            return $test["id"];
+        }else{
+            echo "non";
+        }
+        }
 }
 
 ?>

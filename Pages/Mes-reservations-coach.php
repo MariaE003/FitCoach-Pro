@@ -100,7 +100,8 @@ if (isset($_POST["accepter"])) {
 
 <!-- NAV -->
 <?php
-require('./components/header.php')
+require('/FitCoach-Pro/Pages/components/header.php');
+
 ?>
 
 <!-- CONTENT -->
@@ -180,7 +181,7 @@ require('./components/header.php')
 
 
 <?php
-require('./components/footer.php')
+require('/FitCoach-Pro/Pages/components/footer.php');
 ?>
 </body>
 </html>

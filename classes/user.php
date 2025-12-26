@@ -113,22 +113,8 @@ class User{
 
 
     }
-    // public function completerProfilCach(int $id){
-    //     $req=$this->pdo->prepare("SELECT c.experience_en_annee FROM coach c
-    //     INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee IS NULL and u.id=?
-    //     ");
-    //     $req->execute([
-    //       $id
-    //     ]);
-    //     $test=$req->fetch(PDO::FETCH_ASSOC);
-    //     return $test;
-    //     var_dump($test);
-    //     // if ($test) {
-    //     //     return $test;
-    //     // }
-    //     // else{
-    //     //     echo 'makinch';
-    //     // }
+    // public function modifierProfil(){
+    
     // }
 
 }

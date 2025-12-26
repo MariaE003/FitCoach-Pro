@@ -1,7 +1,7 @@
 <?php
-$RolePage="client";
-require '../dataBase/connect.php';
 require '../session.php';
+require '../dataBase/connect.php';
+$RolePage="client";
 
 $id_user=$_SESSION["user_id"];
 $req=$connect->prepare("select * from client where id_user=?");
@@ -47,7 +47,8 @@ if (isset($_POST["save"])) {
 </head>
 <body>
     <?php
-    require './components/header.php';
+    require('/FitCoach-Pro/Pages/components/header.php');
+
     ?>
     
 
@@ -157,7 +158,8 @@ if (isset($_POST["save"])) {
 
 
     <?php
-    require 'components/footer.php';
+   require('/FitCoach-Pro/Pages/components/footer.php');
+
     ?>
 </body>
 </html>

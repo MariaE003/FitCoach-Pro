@@ -1,5 +1,5 @@
 <?php
-require_once '/../dataBase/Connect.php';
+require_once __DIR__ .  '/../dataBase/Connect.php';
 
 class Reservation{
     /* 
@@ -23,7 +23,7 @@ class Reservation{
         $this->pdo=DataBase::connect();
     }
 
-    public function getIdcoach(){return $this->idcoach;}
+    public function getIdcoach(){return $this->id_coach;}
     // public function setidcoach(int $idcoach){$this->idcoach=$idcoach;}
 
     public function getId(){return $this->id;}
@@ -48,7 +48,7 @@ class Reservation{
 
     // id du coach
     public function AjouterReservation($id_client,$id_coach,$id_disponibilite){
-        $req1 = $this->pdo->prepare("INSERT INTO reservation (id_client, id_coach, id_disponibilite, heure_debut, heure_fin, objectif, date) 
+        $req1 = $this->pdo->prepare("INSERT INTO reservation (id_client, id_coach, id_disponibilite, heure_debut, heure_fin, objectif, date,status) 
         VALUES(?,?,?,?,?,?,?,?)");
         $req1->execute([
             $id_client,
@@ -59,6 +59,7 @@ class Reservation{
             $this->heure_fin,
             $this->objectif,
             $this->date,
+            "en_attente"
 
             // $this->status,
         ]);
@@ -66,8 +67,8 @@ class Reservation{
         return $idDispo;
     }
 
-    public function ModifierReservation(int $idClient){
-        $req2 = $this->pdo->prepare("UPDATE reservation set  heure_debut=?, heure_fin=?, objectif=?, date=?  where id_client=?");
+    public function ModifierReservation(int $idReser){
+        $req2 = $this->pdo->prepare("UPDATE reservation set  heure_debut=?, heure_fin=?, objectif=?,status=?, date=?  where id_client=?");
         $req2->execute([
 
             $this->heure_debut,
@@ -75,14 +76,32 @@ class Reservation{
             $this->objectif,
             $this->date,
 
-            $idClient
+            'accepter',
+            $idReser
         ]);
 
     }
-    public function affichierReservation(){
-        $reqSelect=$this->pdo->prepare("SELECT * from reservation");
-        $reqSelect->execute([]);
+    public function affichierReservation($id_client){
+        // $reqSelect=$this->pdo->prepare("SELECT * from reservation");
+        $statusEnAttente="en_attente";
+        $reqSelect = $this->pdo->prepare("SELECT c.nom, c.prenom, c.prix, c.photo, r.* FROM reservation r 
+            INNER JOIN coach c ON r.id_coach=c.id 
+            WHERE r.id_client=? AND r.status=? "
+            );
+        $reqSelect->execute([
+            $id_client, $statusEnAttente
+        ]);
+        $MesRe=$reqSelect->fetchAll(PDO::FETCH_ASSOC);
+        if ($MesRe) {
+            return $MesRe;
+            
+        }else{
+            echo "reservation non trouve.";
+            return false;
+        }
     }
+
+
     public function supprimerReservation($id){
         $reqDelete=$this->pdo->prepare("DELETE from reservation where id=?");
         $reqDelete->execute([

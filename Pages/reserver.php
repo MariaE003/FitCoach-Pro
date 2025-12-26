@@ -101,7 +101,8 @@ if (isset($_POST["reserver"])) {
 
 <!-- NAV -->
 <?php
-require('./components/header.php');
+require('/FitCoach-Pro/Pages/components/header.php');
+
 ?>
 
 <!-- CONTENT -->
@@ -220,7 +221,8 @@ require('./components/header.php');
 </section>
 
 <?php
-require('./components/footer.php')
+require('/FitCoach-Pro/Pages/components/footer.php');
+
 ?>
 <script>
   let dateF=document.querySelector("#date"); 

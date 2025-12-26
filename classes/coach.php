@@ -72,8 +72,27 @@ class Coach extends User{
         // }
         // return false;
     }
-    public function virifierProfilCoach(int $id){
-        $req=$this->pdo->prepare("SELECT * FROM coach c INNER JOIN users u ON u.id=c.id_user WHERE c.id_user=? ");
+    // public function virifierProfilCoach(int $id){
+    //     $req=$this->pdo->prepare("SELECT * FROM coach c INNER JOIN users u ON u.id=c.id_user WHERE c.id_user=? ");
+    //     // erreur => 0 dans experience 😒😒
+    //     // experience_en_annee=0 and 
+    //     $req->execute([
+    //         $id
+    //     ]);
+    //     $test=$req->fetch(PDO::FETCH_ASSOC);
+    //     // echo "dxcf";
+    //     if ($test) {
+    //         // echo $test["nom"];
+    //         return $test["id"];
+    //     }
+        
+    //     // else{
+    //         //     echo 'non trouver';
+    //         // }
+            
+    //     }
+    public function leCoachConne(int $id){
+        $req=$this->pdo->prepare("SELECT * FROM coach  WHERE id_user=?");
         // erreur => 0 dans experience 😒😒
         // experience_en_annee=0 and 
         $req->execute([
@@ -166,13 +185,27 @@ public function virifierSiCoachCompleterProfil(int $userid){
 
     $res1=$req->fetch(PDO::FETCH_ASSOC);
     // echo $res1["id"];
-    if ($res1){
+    if ($res1['experience_en_annee']!== null){
         // $coachId=$this->coach_id = $res1['id'];
-        return $res1["experience_en_annee"];
+        return true;
         // return true;
     }
     return false;
 }
+
+public function tousCoach() {
+    $req = $this->pdo->prepare("
+        SELECT c.id, c.nom, c.prenom, c.prix, c.photo, c.experience_en_annee,
+               GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') AS specialite
+        FROM coach c
+        LEFT JOIN specialite_coach sc ON c.id = sc.id_coach
+        LEFT JOIN specialite s ON sc.id_specialite = s.id
+        GROUP BY c.id
+    ");
+    $req->execute();
+    return $req->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
 
 }

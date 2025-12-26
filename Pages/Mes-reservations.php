@@ -1,105 +1,22 @@
 <?php
-$RolePage="client";
+
 require '../session.php';
-require '../dataBase/connect.php';
-// if (isset($_GET["idProfilCoach"])) {
-//   $idcoach=$_GET["idProfilCoach"];
-// }
-$id_user=$_SESSION["user_id"];
-if (isset($_POST["detailBtn"])) {
-  $deta=$_POST["detailBtn"];
-  echo $deta;
-}
+// require_once __DIR__ .  '/FitCoach-Pro/Pages/Mes-reservations.php';
+require '../classes/Reservation.php';
+require '../classes/Coach.php';
+require '../classes/client.php';
 
-// id client
-$req1=$connect->prepare("SELECT id FROM client where id_user=?");
-$req1->bind_param("i",$id_user);
-$req1->execute();
-$res1=$req1->get_result();
-$id_client1=$res1->fetch_assoc();
-$id_client= $id_client1["id"];
-// les reservation de ce client
-$statusEnAttent="en_attente";
-$statusAcceptee="acceptee";
-$req=$connect->prepare("SELECT c.nom,c.prenom,c.prix,c.photo,r.* FROM reservation r 
-  inner join coach c on  r.id_coach=c.id
-  where r.id_client=? and (r.status=? or r.status=?)  ");
-$req->bind_param("iss",$id_client,$statusEnAttent,$statusAcceptee);
-$req->execute();
-$res=$req->get_result();
-$rservationRows=$res->fetch_all(MYSQLI_ASSOC);
+$idUser = $_SESSION["user_id"];
+$role = $_SESSION["role"];
+
+// récupérer id client à partir de la table client
+$client = new Client();
+$id_client = $client->leClientConne($idUser); // méthode qui retourne l'id du client
+
+$reservationObj = new Reservation();
+$reservations = $reservationObj->affichierReservation($id_client);
 
 
-
-// modification
-if (isset($_POST["modifier"])) {
-  $id_reservation = $_POST['id_reservation'];
-      // modifier reservation 
-      $reqRes=$connect->prepare("UPDATE reservation set status=? where id=?");
-      $status = "Annuler";
-      $reqRes->bind_param("si", $status, $id_reservation);
-      // $reqDis->execute();
-      // prendre les info pour modifier dispo
-      if ($reqRes->execute()) {
-        $reqResInfo = $connect->prepare("SELECT id_coach, date, heure_debut, heure_fin FROM reservation WHERE id=?");
-        $reqResInfo->bind_param("i", $id_reservation);
-        $reqResInfo->execute();
-        $resInfo = $reqResInfo->get_result()->fetch_assoc();
-
-        //  modifier disponibiliter 
-        $disponible = 1;
-        $reqDis=$connect->prepare("UPDATE disponibilite set disponible=? where id_coach=? and date=? and heure_debut=? and heure_fin=?");
-        $reqDis->bind_param("iisss",$disponible,$resInfo["id_coach"],$resInfo["date"],$resInfo["heure_debut"],$resInfo["heure_fin"]);
-        $reqDis->execute();
-        
-        // header("Location: coach-profile.php?idProfilCoach=$idcoach");
-        header("Location: reserver.php?idProfilCoach=" . $resInfo['id_coach']);
-        exit();
-      }
-
-}
-
-
-
-
-// hitorique de reservation
-$statusAnnuler = "Annuler";
-$statusRefuser = "Refuser";
-
-$reqHist = $connect->prepare("SELECT c.nom, c.prenom, c.prix, c.photo, r.* FROM reservation r INNER JOIN coach c ON r.id_coach=c.id WHERE r.id_client=? AND (r.status=? OR r.status=?)");
-
-$reqHist->bind_param("iss", $id_client, $statusAnnuler, $statusRefuser);
-$reqHist->execute();
-$resHist = $reqHist->get_result();
-$reservationHistory = $resHist->fetch_all(MYSQLI_ASSOC);
-
-
-
-if (isset($_POST["annuler"])) {
-
-  $id_reservation = $_POST["id_reservation"];
-  $status = "Annuler";
-
-  //modifier le status de reservation
-  $reqRes = $connect->prepare( "UPDATE reservation SET status=? WHERE id=? AND id_client=?" );
-  $reqRes->bind_param("sii", $status, $id_reservation, $id_client);
-
-  if ($reqRes->execute()) {
-    // prendre les info du reservation
-    $reqInfo = $connect->prepare("SELECT id_coach, date, heure_debut, heure_fin FROM reservation WHERE id=?");
-    $reqInfo->bind_param("i", $id_reservation);
-    $reqInfo->execute();
-    $info = $reqInfo->get_result()->fetch_assoc();
-
-    // modifier dispo 
-    $disponible = 1;
-    $reqDis = $connect->prepare("UPDATE disponibilite SET disponible=? WHERE id_coach=? AND date=? AND heure_debut=? AND heure_fin=?");
-    $reqDis->bind_param("iisss",$disponible,$info["id_coach"],$info["date"],$info["heure_debut"],$info["heure_fin"]);
-    $reqDis->execute();
-    header("Location: Mes-reservations.php");
-    exit();
-  }
-}
 
 ?>
 <!DOCTYPE html>
@@ -130,7 +47,7 @@ if (isset($_POST["annuler"])) {
 
 <!-- NAV -->
 <?php
-require('./components/header.php')
+// require __DIR__ .'/FitCoach-Pro/Pages/components/header.php' ;
 ?>
 
 <!-- CONTENT -->
@@ -151,8 +68,19 @@ require('./components/header.php')
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
          <?php
-         if (count($rservationRows)>0) {
-         foreach ($rservationRows as $reser) {
+    
+  //     echo "Date: " . $res["date"] . "<br>";
+  //     echo "Heure début: " . $res["heure_debut"] . "<br>";
+  //     echo "Heure fin: " . $res["heure_fin"] . "<br>";
+  //     echo "Coach: " . $res["prenom"] . " " . $res["nom"] . "<br>";
+  //     echo "Prix: " . $res["prix"] . " DH<br>";
+  //     echo "Statut: " . $res["status"] . "<hr>";
+  //   }
+  // } else {
+  //   echo "Aucune réservation disponible pour le moment.";
+  // }
+  if ($reservations && count($reservations) > 0) {
+         foreach ($reservations as $reser) {
         
          ?>
         <tr>
@@ -202,46 +130,15 @@ require('./components/header.php')
       </tbody>
     </table>
   </div>
-  <!-- les reservation annuller ou refuser -->
-   <h2 class="text-2xl font-bold mb-4 mt-8">Historique des Réservations</h2>
-  <div class="overflow-x-auto bg-white rounded-xl shadow">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Heure Debut</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Heure Fin</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coach</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prix</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <?php foreach ($reservationHistory as $reser) { ?>
-        <tr>
-          <td class="px-6 py-4"><?=$reser["date"]?></td>
-          <td class="px-6 py-4"><?=$reser["heure_debut"]?></td>
-          <td class="px-6 py-4"><?=$reser["heure_fin"]?></td>
-          <td class="px-6 py-4"><?=$reser["prenom"]." ".$reser["nom"]?></td>
-          <td class="px-6 py-4">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?=($reser["status"]=="Annuler")?"bg-red-100 text-red-800":"bg-gray-200 text-gray-800"?>">
-              <?=$reser["status"]?>
-            </span>
-          </td>
-          <td class="px-6 py-4"><?=$reser["prix"]?> DH</td>
-        </tr>
-        <?php } ?>
-      </tbody>
-    </table>
-  </div>
-
+  
 </section>  
 
 
 <!--  -->
 
 <?php
-require('./components/footer.php')
+// require('/FitCoach-Pro/Pages/components/footer.php');
+
 ?>
 </body>
 </html>

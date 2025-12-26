@@ -1,5 +1,5 @@
 <?php
-// session_start();
+session_start();
 require '../dataBase/connect.php';
 require '../classes/User.php';
 require '../classes/Coach.php';
@@ -7,22 +7,15 @@ require '../classes/Coach.php';
 $erreur="";
 
 
-
-
-
 // require "../connect.php";
 
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
+//     $User1=new User();
+// $_SESSION["user_id"]=$User1->getId();
+//         echo $_SESSION["user_id"];
+//         $_SESSION["role"]=$User1->getRole();
 
 if (isset($_POST["Seconnecter"])) {
 
-//   // Verifier csrf token
-  // if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-  //       die(" formulaire invalide !");
-  //   }
 //   #vilider les champs
   if (!empty($_POST["email"]) && !empty($_POST["password"])) {
     $email=$_POST["email"];
@@ -34,7 +27,11 @@ if (isset($_POST["Seconnecter"])) {
     $password = htmlspecialchars(trim($_POST['password']), ENT_QUOTES, 'UTF-8');
 //     // echo $role;
     $User=new User();
-    $User->login($email,$password);
+    if ($User->login($email, $password)) {
+
+    $_SESSION["user_id"] = $User->getId();
+    $_SESSION["role"]    = $User->getRole();
+    // $User->login($email,$password);
     // 
 
 //     // $passwordHasher=password_hash($password,PASSWORD_BCRYPT);
@@ -51,10 +48,11 @@ if (isset($_POST["Seconnecter"])) {
 //       $user=$Result->fetch_assoc();
 //       if (password_verify($password,$user['password'])) {
 //         $_SESSION["user_id"]=$user['id'];
-        $_SESSION["user_id"]=$User->getId();
-        $_SESSION["role"]=$User->getRole();
+
+
+
         // echo $_SESSION["role"];
-        $role=$_SESSION["role"];
+        // $role=$_SESSION["role"];
         // echo $role;
         
         // $req=$User->pdo->prepare("SELECT c.experience_en_annee FROM coach c
@@ -65,36 +63,53 @@ if (isset($_POST["Seconnecter"])) {
         // ]);
         // $test=$req->fetch(PDO::FETCH_ASSOC);
         $coach=new Coach();
-        $test=$coach->virifierProfilCoach($User->getId());
+        // $test=$coach->virifierProfilCoach($User->getId());
         // echo $test;
-        if ($test){
+    // if ($test){
           // print_r( $test["experience_en_annee"]);
-          if ($role==="coach") {
+          if ($_SESSION["role"]==="coach"){
+            if ($coach->virifierSiCoachCompleterProfil( $_SESSION["user_id"])) {
+            header("Location: /FitCoach-Pro/index.php");
+            exit();
+          }
             // echo 'hi my coach';
             header("Location: /FitCoach-Pro/auth/addProfilCoach.php");
             exit();
           }
-          if($role==="client"){
-            header("Location:  /FitCoach-Pro/index.php");
-            exit();
-          }
-          
-        }
 
+          // if($role==="client"){
+          //   header("Location:  /FitCoach-Pro/index.php");
+          //   exit();
+          // }
+          
+        // }
+        
+        // if ($user['role']==="coach"){
+        //   if (!$coach->verifierSiCoachCompleterProfil($User->getId())) {
+        //     header("Location: /FitCoach-Pro/index.php");
+        //     exit();
+        //   }
+        //   header("Location: /FitCoach-Pro/auth/addProfilCoach.php");
+        //   exit();
+        // }
         // $idDuUser=$_SESSION["user_id"];
         // $coach=new Coach();
-        $test1=$coach->virifierSiCoachCompleterProfil($User->getId());
+        // $test1=$coach->virifierSiCoachCompleterProfil($User->getId());
 
-        if(!$test1)
+        // if($test1===false){
+        //   header("Location: /FitCoach-Pro/index.php");
+        //   exit();
+        // }
+        // 
+        
+
+        // 
         // si le role est coach il Doit completer leur profil SI IL NA PAS COMPLETER ENCOR
-        if ($user['role']==="coach"){
-        header("Location: /FitCoach-Pro/auth/addProfilCoach.php");
-        exit();
-        }
 
         header("Location: /FitCoach-Pro/index.php");
         exit();
       }
+        }
     //   else{
     //     $erreur="mot de passe incorrect !";
     //   }
@@ -104,6 +119,10 @@ if (isset($_POST["Seconnecter"])) {
   // }
 
 }
+// $coach=new Coach();
+// $User=new User();
+// $test1=$coach->virifierSiCoachCompleterProfil($User->getId());
+//       var_dump($test1);
 
 
 
@@ -146,12 +165,11 @@ if (isset($_POST["Seconnecter"])) {
           <p class="text-gray-600 mb-6">Accédez à votre compte</p>
 
           <form method="POST" id="loginForm" class="space-y-4" onsubmit="return validerForm()">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <?php 
             if(!empty($erreur)){
               ?>
               <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                <? $erreur ?>
+                <?= $erreur ?>
               </div>
             <?php
             };

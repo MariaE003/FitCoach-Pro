@@ -90,7 +90,8 @@ if (isset($_POST["annuler"])) {
 </head>
 <body>
 <?php
-require('./components/header.php');
+// C:\laragon\www\FitCoach-Pro\Pages\components\header.php
+require('/FitCoach-Pro/Pages/components/header.php');
 ?>
 <div class="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto my-8">
   <h2 class="text-xl font-bold mb-4 text-gray-800">Ajouter une disponibilité</h2>
@@ -177,7 +178,7 @@ require('./components/header.php');
       </tbody>
     </table>
 <?php
-require('./components/footer.php');
+require('/FitCoach-Pro/Pages/components/footer.php');
 ?>
 <script>
 
