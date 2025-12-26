@@ -10,66 +10,66 @@ if (isset($_GET["idProfilCoach"])) {
 }
 
 // id client
-$req1=$connect->prepare("SELECT id FROM client where id_user=?");
-$req1->bind_param("i",$id_user);
-$req1->execute();
-$res1=$req1->get_result();
-$id_client1=$res1->fetch_assoc();
-$id_client= $id_client1["id"];
+// $req1=$connect->prepare("SELECT id FROM client where id_user=?");
+// $req1->bind_param("i",$id_user);
+// $req1->execute();
+// $res1=$req1->get_result();
+// $id_client1=$res1->fetch_assoc();
+// $id_client= $id_client1["id"];
 
 
-$req=$connect->prepare("SELECT * FROM disponibilite where id_coach=? and disponible=1");
-$req->bind_param("i",$idcoach);
-$req->execute();
-$res=$req->get_result();
-$dispoRows=$res->fetch_all(MYSQLI_ASSOC);
+// $req=$connect->prepare("SELECT * FROM disponibilite where id_coach=? and disponible=1");
+// $req->bind_param("i",$idcoach);
+// $req->execute();
+// $res=$req->get_result();
+// $dispoRows=$res->fetch_all(MYSQLI_ASSOC);
 
 
-// grouper les times par dates
-$dispoLignes=[];
-foreach ($dispoRows as $dispo) {
-  $date=$dispo["date"];
-  $time=$dispo["heure_debut"]."-".$dispo["heure_fin"];
-  if (!isset($dispoLignes[$date])) {
-    $dispoLignes[$date]=[];
-  }
-  $dispoLignes[$date][]=$time;  
-}
+// // grouper les times par dates
+// $dispoLignes=[];
+// foreach ($dispoRows as $dispo) {
+//   $date=$dispo["date"];
+//   $time=$dispo["heure_debut"]."-".$dispo["heure_fin"];
+//   if (!isset($dispoLignes[$date])) {
+//     $dispoLignes[$date]=[];
+//   }
+//   $dispoLignes[$date][]=$time;  
+// }
 
 
 // virifier 
 
-if (isset($_POST["reserver"])) {
-  if (!empty($_POST["date"])&&!empty($_POST["Hdebut"])&&!empty($_POST["HFin"])&&!empty($_POST["objectif"])) {
-    $date=$_POST["date"];
-    $Hdebut=$_POST["Hdebut"];
-    $HFin=$_POST["HFin"];
-    $objectif=$_POST["objectif"];
-    $idDispo=$_POST["idDispo"];
+// if (isset($_POST["reserver"])) {
+//   if (!empty($_POST["date"])&&!empty($_POST["Hdebut"])&&!empty($_POST["HFin"])&&!empty($_POST["objectif"])) {
+//     $date=$_POST["date"];
+//     $Hdebut=$_POST["Hdebut"];
+//     $HFin=$_POST["HFin"];
+//     $objectif=$_POST["objectif"];
+//     $idDispo=$_POST["idDispo"];
 
-    // inserer la reservation 
-    $reqReser=$connect->prepare("INSERT INTO reservation 
+//     // inserer la reservation 
+//     $reqReser=$connect->prepare("INSERT INTO reservation 
 
-    (id_client, id_coach, id_disponibilite,heure_debut, heure_fin, objectif, date)
+//     (id_client, id_coach, id_disponibilite,heure_debut, heure_fin, objectif, date)
 
-    VALUES(?,?,?,?,?,?,?)");
+//     VALUES(?,?,?,?,?,?,?)");
     
-    $reqReser->bind_param("iiissss",$id_client,$idcoach,$idDispo,$Hdebut,$HFin,$objectif,$date);
+//     $reqReser->bind_param("iiissss",$id_client,$idcoach,$idDispo,$Hdebut,$HFin,$objectif,$date);
 
-    if ($reqReser->execute()) {
-      // modifier disponibiliter 
-      $disponible = 0;
-      $reqDis=$connect->prepare("UPDATE disponibilite set disponible=? where id_coach=? and date=? and heure_debut=? and heure_fin=?");
-      $reqDis->bind_param("iisss",$disponible,$idcoach,$date,$Hdebut,$HFin);
+//     if ($reqReser->execute()) {
+//       // modifier disponibiliter 
+//       $disponible = 0;
+//       $reqDis=$connect->prepare("UPDATE disponibilite set disponible=? where id_coach=? and date=? and heure_debut=? and heure_fin=?");
+//       $reqDis->bind_param("iisss",$disponible,$idcoach,$date,$Hdebut,$HFin);
       
-      if($reqDis->execute()){
-        header("Location: Mes-reservations.php");
-        exit();
-      }
-    }
+//       if($reqDis->execute()){
+//         header("Location: Mes-reservations.php");
+//         exit();
+//       }
+//     }
     
-  }
-}
+//   }
+// }
 
 ?>
 <!DOCTYPE html>
@@ -101,7 +101,7 @@ if (isset($_POST["reserver"])) {
 
 <!-- NAV -->
 <?php
-require('/FitCoach-Pro/Pages/components/header.php');
+// require('/FitCoach-Pro/Pages/components/header.php');
 
 ?>
 
@@ -221,8 +221,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
 </section>
 
 <?php
-require('/FitCoach-Pro/Pages/components/footer.php');
-
+// require('/FitCoach-Pro/Pages/components/footer.php');
 ?>
 <script>
   let dateF=document.querySelector("#date"); 
@@ -258,11 +257,7 @@ require('/FitCoach-Pro/Pages/components/footer.php');
 
   });
 
-  // confirmBtn.addEventListener("click",()=>{
-  //   let id=confirmBtn.dataset.id;
-  //   input.value=id;   
-  //   console.log(input) 
-  // });
+  
 </script>
 </body>
 </html>

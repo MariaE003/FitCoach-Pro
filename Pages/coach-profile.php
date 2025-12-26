@@ -2,74 +2,36 @@
 $RolePage="client";
 require '../session.php';
 require '../dataBase/connect.php';
+require '../classes/Coach.php';
+
+// echo $_SESSION["role"];
 
 $idcoach=$_GET["idProfilCoach"];
 // echo $idcoach;
 if (isset($idcoach)) {
- // les info du profil 
-$req=$connect->prepare("SELECT * FROM coach c where c.id=?");
+ // les info du profil
+ 
+$coachObj = new Coach();
 
-$req->bind_param("s",$idcoach);
-$req->execute();
-$resu=$req->get_result();
-$profil=$resu->fetch_assoc();
+$idcoach = $_GET['idProfilCoach'];
 
+if ($idcoach) {
+    $profil = $coachObj->detailCoach($idcoach);
 
+    if (!$profil) {
+        echo "Coach non trouvé.";
+        exit();
+    }
 
-// 
+    $specialites = explode(',', $profil['specialites']);
+   
+    $Certif=$coachObj->CertifCoach($idcoach);
+    // var_dump($certif);
+} else {
+    header("Location: ./index.php");
+    exit();
+}
 
-// les specialite
-$reqSpec=$connect->prepare("SELECT GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') AS specialite
-                        FROM coach c
-                        inner join specialite_coach sc on sc.id_coach=c.id
-                        inner join specialite s on sc.id_specialite=s.id
-
-                        where c.id=?
-                        group by c.id
-                        ");
-
-$reqSpec->bind_param("s",$idcoach);
-$reqSpec->execute();
-$resuSpec=$reqSpec->get_result();
-$SpecialiteInfo=$resuSpec->fetch_assoc();
-
-// 
-
-
-
-
-
-// certificat
-$reqCertif=$connect->prepare("SELECT c.*,
-
-                        GROUP_CONCAT(ce.nom_certif SEPARATOR ', ') AS nomCertif,
-
-                        GROUP_CONCAT(ce.etablissement SEPARATOR ', ') AS etablissement,
-
-                        GROUP_CONCAT(ce.annee SEPARATOR ', ') AS anneeCertif 
-
-                        FROM coach c
-                        inner join certification ce on ce.id_coach=c.id
-                        where c.id=?
-                        group by c.id
-                        ");
-
-$reqCertif->bind_param("s",$idcoach);
-$reqCertif->execute();
-$resuCertif=$reqCertif->get_result();
-$Certif=$resuCertif->fetch_assoc();
-
-
-
-// le nombre des certif de ce coach
-$count=$connect->prepare("SELECT count(*) as nbr FROM coach c 
-INNER JOIN certification ce ON ce.id_coach=c.id where c.id=? group by c.id
-");
-$count->bind_param("s",$idcoach);
-$count->execute();
-$res=$count->get_result();
-$nbr=$res->fetch_assoc();
-// echo $nbr["nbr"];
 
 
 ?>
@@ -102,7 +64,7 @@ $nbr=$res->fetch_assoc();
 
 <!-- NAVBAR -->
 <?php
-require('/FitCoach-Pro/Pages/components/header.php');
+// require('/FitCoach-Pro/Pages/components/header.php');
 
 
 // foreach($profil as $prof){
@@ -128,7 +90,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
       <h1 class="text-4xl font-extrabold mb-2"><?=$profil["nom"]." ".$profil["prenom"]?></h1>
       <p class="text-gray-300 mb-4">
         <i class="fas fa-futbol text-accent"></i>
-        <?= $SpecialiteInfo["specialite"];?>
+        <?= $profil['specialites'];?>
       </p>
 
       <div class="flex items-center gap-3 text-yellow-400 mb-4">
@@ -138,7 +100,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
       <div class="grid sm:grid-cols-3 gap-4 text-sm text-gray-200">
         <div><i class="fas fa-clock text-accent"></i> <?=$profil["experience_en_annee"]?> ans d'expérience</div>
         <div><i class="fas fa-users text-accent"></i> 250+ sportifs</div>
-        <div><i class="fas fa-certificate text-accent"></i> <?= $nbr["nbr"]?> certifications</div>
+        <div><i class="fas fa-certificate text-accent"></i> <?= $Certif["nbrCertif"]?> certifications</div>
       </div>
     </div>
 
@@ -169,11 +131,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
       </h2>
       <div class="flex flex-wrap gap-3">
         <?php
-        // $spec=$profil["specialite"];
-        //string => array (specialites) with explode(",",$tring)
-        $spec=$SpecialiteInfo["specialite"];
-        $ArraySpacilite=explode(",",$spec);
-        foreach ($ArraySpacilite as $specialite) {
+        foreach ($specialites as $specialite) {
           // echo $specialite."<br>";
                 
         ?>
@@ -264,7 +222,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
 }else{
   header("Location: ./index.php");
 }
-require('/FitCoach-Pro/Pages/components/footer.php');
+// require('/FitCoach-Pro/Pages/components/footer.php');
 
 ?>
 

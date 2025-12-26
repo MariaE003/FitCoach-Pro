@@ -92,7 +92,6 @@ $coachs = $coachObj->tousCoach();
     <!-- CARD -->
     <?php
     foreach($coachs as $coa){
-    // var_dump($coa["photo"]);
 
     ?>
     <div class="coach-card bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden"

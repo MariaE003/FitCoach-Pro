@@ -194,17 +194,51 @@ public function virifierSiCoachCompleterProfil(int $userid){
 }
 
 public function tousCoach() {
-    $req = $this->pdo->prepare("
-        SELECT c.id, c.nom, c.prenom, c.prix, c.photo, c.experience_en_annee,
+    $req = $this->pdo->prepare("SELECT c.id, c.nom, c.prenom, c.prix, c.photo, c.experience_en_annee,
                GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') AS specialite
         FROM coach c
-        LEFT JOIN specialite_coach sc ON c.id = sc.id_coach
-        LEFT JOIN specialite s ON sc.id_specialite = s.id
+        inner join specialite_coach sc ON c.id = sc.id_coach
+        inner join specialite s ON sc.id_specialite = s.id
         GROUP BY c.id
     ");
     $req->execute();
     return $req->fetchAll(PDO::FETCH_ASSOC);
 }
+
+// le detail du coach
+public function detailCoach(int $id) {
+    $req = $this->pdo->prepare("SELECT c.id, c.nom, c.prenom, c.prix, c.photo, c.telephone, c.bio, c.experience_en_annee,
+               GROUP_CONCAT(DISTINCT s.nom_specialite SEPARATOR ', ') AS specialites
+        FROM coach c
+        inner JOIN specialite_coach sc ON c.id = sc.id_coach
+        inner JOIN specialite s ON sc.id_specialite = s.id
+        WHERE c.id = ?
+        GROUP BY c.id
+    ");
+    $req->execute([$id]);
+    return $req->fetch(PDO::FETCH_ASSOC); 
+}
+// le certifs du coach
+public function CertifCoach(int $id) {
+    $reqCertif=$this->pdo->prepare("SELECT c.*,count(*) as nbrCertif,
+
+                        GROUP_CONCAT(ce.nom_certif SEPARATOR ', ') AS nomCertif,
+
+                        GROUP_CONCAT(ce.etablissement SEPARATOR ', ') AS etablissement,
+
+                        GROUP_CONCAT(ce.annee SEPARATOR ', ') AS anneeCertif 
+
+                        FROM coach c
+                        inner join certification ce on ce.id_coach=c.id
+                        where c.id=?
+                        group by c.id
+                        ");
+$reqCertif->execute([
+    $id
+]);
+    return $reqCertif->fetch(PDO::FETCH_ASSOC); 
+}
+
 
 
 
