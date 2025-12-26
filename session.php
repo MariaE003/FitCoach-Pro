@@ -7,7 +7,6 @@ if(!isset($_SESSION['user_id'])) {
 }
 // echo "<a href='./auth/login.php'></a>"
 
-
 // logout
 
 if(isset($_POST["logout"])){
@@ -26,7 +25,6 @@ if (isset($RolePage) && $_SESSION["role"]!==$RolePage){
     exit();
     
 }
-
 
 
  ?>

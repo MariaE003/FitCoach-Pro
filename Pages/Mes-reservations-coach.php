@@ -1,75 +1,39 @@
 <?php
-$RolePage="coach";
 require '../session.php';
+$RolePage="coach";
 require '../dataBase/connect.php';
-// if (isset($_GET["idProfilCoach"])) {
-//   $idcoach=$_GET["idProfilCoach"];
-// }
+require '../classes/coach.php';
+require '../classes/Reservation.php';
+
 $id_user=$_SESSION["user_id"];
-// if (isset($_POST["detailBtn"])) {
-//   $deta=$_POST["detailBtn"];
-//   // echo $deta;
-// }
-
-// id coach
-$req1=$connect->prepare("SELECT id FROM coach where id_user=?");
-$req1->bind_param("i",$id_user);
-$req1->execute();
-$res1=$req1->get_result();
-$id_coach=$res1->fetch_assoc();
-$id_coach1= $id_coach["id"];
-
-// les reservation de ce coach
-$statusEnAttent="en_attente";
-// $statusAcceptee="acceptee";
-$req=$connect->prepare("SELECT c.nom,c.prenom,c.prix,c.photo,cl.nom as 'nomClient',cl.prenom as 'prenomClient',r.* FROM reservation r 
-  inner join coach c on  r.id_coach=c.id
-  inner join client cl on  r.id_client=cl.id
-  where c.id=? and r.status=?");
-$req->bind_param("is",$id_coach1,$statusEnAttent);
-$req->execute();
-$rservationCoachRows=$req->get_result()->fetch_all(MYSQLI_ASSOC);
 
 
-// annuler une seance
-if (isset($_POST["annuler"])) {
+$coach= new Coach();
+$coach_id = $coach->leCoachConne($id_user);
 
-  $id_reservation = $_POST["id_reservation"];
-  $status = "Annuler";
 
-  //modifier le status de reservation
-  $reqRes = $connect->prepare( "UPDATE reservation SET status=? WHERE id=? AND id_coach=?" );
-  $reqRes->bind_param("sii", $status, $id_reservation, $id_coach1);
+$resr=new Reservation();
+$rservationCoachRows=$resr->afficherDetailReser($coach_id);
 
-  if ($reqRes->execute()) {
-    // prendre les info du cette reservation 
-    $reqInfo = $connect->prepare("SELECT id_coach, date, heure_debut, heure_fin FROM reservation WHERE id=?");
-    $reqInfo->bind_param("i", $id_reservation);
-    $reqInfo->execute();
-    $info = $reqInfo->get_result()->fetch_assoc();
+// echo $rservationCoachRows["nom"];
 
-    // modifier dispo 
-    $disponible = 1;
-    $reqDis = $connect->prepare("UPDATE disponibilite SET disponible=? WHERE id_coach=? AND date=? AND heure_debut=? AND heure_fin=?");
-    $reqDis->bind_param("iisss",$disponible,$info["id_coach"],$info["date"],$info["heure_debut"],$info["heure_fin"]);
-    $reqDis->execute();
-    header("Location: Mes-reservations-coach.php");
-    exit();
-  }
+if (isset($_POST['annuler'])) {
+    $idReservation = $_POST['id_reservation'];
+
+    if ($resr->annulerReservation($idReservation, $idCoach)) {
+        header("Location: Mes-reservations-coach.php");
+        exit();
+    }
 }
 
-// accepter une reservation
-if (isset($_POST["accepter"])) {
-  $id_reservation = $_POST["id_reservation"];
-  // echo $id_reservation;
-  $statusAcc = "Accepter";
-  $reqAccepter = $connect->prepare("UPDATE reservation SET status=? WHERE id=? AND id_coach=?");
-  $reqAccepter->bind_param("sii", $statusAcc, $id_reservation, $id_coach1);
-  $reqAccepter->execute();
-  header("Location: Mes-reservations-coach.php");
-  exit();
-  
-} 
+if (isset($_POST['accepter'])) {
+    $idReservation = $_POST['id_reservation'];
+
+    if ($resr->accepterReservation($idReservation, $idCoach)) {
+        header("Location: Mes-reservations-coach.php");
+        exit();
+    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -100,7 +64,7 @@ if (isset($_POST["accepter"])) {
 
 <!-- NAV -->
 <?php
-require('/FitCoach-Pro/Pages/components/header.php');
+require('../Pages/components/header.php');
 
 ?>
 
@@ -181,7 +145,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
 
 
 <?php
-require('/FitCoach-Pro/Pages/components/footer.php');
+require('../Pages/components/footer.php');
 ?>
 </body>
 </html>

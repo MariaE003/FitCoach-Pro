@@ -5,25 +5,12 @@ require '../session.php';
 require_once __DIR__ . '/../classes/User.php';
 require_once __DIR__ . '/../classes/coach.php';
 
-// if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'coach'){
-//     header("Location: ../index.php");
-//     exit();
-// }
 
-// echo '<pre>';
-// var_dump($_SESSION);
-// echo '</pre>';
-//     echo $_SESSION["user_id"];
 
 $id_user=$_SESSION["user_id"];
 // echo $id_user;
 $coach=new Coach();
-// $IsExist=$coach->virifierProfilCoach($id_user);
-// echo $IsExist;
-// var_dump($IsExist);
 
-// $tes=$coach->CoachConnId($id_user);
-//       echo $tes;
 if (isset($_POST["submitProfil"])) {
     //les champs du coach
     $experience=$_POST["experience"];
@@ -40,10 +27,7 @@ if (isset($_POST["submitProfil"])) {
     $cert=$_POST["certifications"];
     $prix=$_POST["prix"];
     
-    // if ( $_SESSION['role'] =='coach') {
-    //   $user_id=$_SESSION['user_id'];
-    // }
-    
+  
     $coach=new Coach();
     $IsExist=$coach->virifierProfilCoach($id_user);
     echo $IsExist;
@@ -73,57 +57,6 @@ if (isset($_POST["submitProfil"])) {
     }
 
     
-
-
-
-
-    // prendre id coach deja inserer
-      //  $reqIdCoach=$connect->prepare('SELECT id FROM coach WHERE id_user=?');
-      //  $reqIdCoach->bind_param('s',$user_id);
-      //  $reqIdCoach->execute();
-      //  $resId=$reqIdCoach->get_result();
-   
-      //  $IdCoach=$resId->fetch_assoc();
-      //  $id_coach=$IdCoach['id'];
-
-    //ajouter les autre champs du coach les coach
-    // echo $id_coach;
-    // $reqCoach=$connect->prepare("UPDATE coach SET experience_en_annee=?,photo=?,bio=?,prix=? WHERE id=?");
-    // $reqCoach->bind_param("sssdi",$experience,$photo,$bio,$prix,$id_coach);
-    // $reqCoach->execute();
-    // if($reqCoach->execute()){
-    //   echo"le coach modifier avec succes" ;
-    // }
-
-    // foreach($specialites as $spe){
-    //     $req=$connect->prepare("INSERT INTO specialite(nom_specialite) VALUES(?)");
-    //     $req->bind_param("s",$spe);
-    //     if($req->execute()){
-    //       $id_specialite[] = $connect->insert_id;
-    //     }
-    // }
-   
-    
-
-    // echo $id_coach;
-    // remplir id 
-
-    // ajouter les specialite
-    // for($i=0; $i <count($id_specialite) ;$i++){
-    //     $req=$connect->prepare("INSERT INTO specialite_coach (id_coach, id_specialite) VALUES(?,?)");
-    //     $req->bind_param("ii",$id_coach,$id_specialite[$i]);
-    //     $req->execute();
-    // }
-
-    // ajouter les certif
-    // for ($i=0; $i <count($cert['nom']) ;$i++) { 
-    //     $nom=$cert["nom"][$i];
-    //     $annee=$cert["annee"][$i];
-    //     $etablissement=$cert["etablissement"][$i];
-    //     $reqcertif=$connect->prepare("INSERT INTO certification(id_coach, nom_certif, annee, etablissement) VALUES(?,?,?,?)");
-    //     $reqcertif->bind_param("isss",$id_coach,$nom,$annee,$etablissement);
-    //     $reqcertif->execute();
-    // }
 
     header('Location:  /FitCoach-Pro/Pages/coach-dashboard.php');
 

@@ -2,83 +2,54 @@
 $RolePage="coach";
 require '../session.php';
 require '../dataBase/connect.php';
+require '../classes/Disponibilite.php';
+require '../classes/coach.php';
 
 $user_id=$_SESSION["user_id"];
-// ID coach
-$reqcoach=$connect->prepare("SELECT id FROM coach WHERE id_user=?");
-$reqcoach->bind_param("i",$user_id);
-$reqcoach->execute();
-$result=$reqcoach->get_result();
-$result1=$result->fetch_assoc();
-$idCoach=$result1["id"];
-// echo $idCoach;
+$coach1=new Coach();
+$idCoach=$coach1->leCoachConne($user_id);
 
-//erreur
-$erreur=""; 
-// les dates et heur deja exist
-// $reqDates=$connect->prepare("SELECT d.* FROM disponibilite d inner join coach c on c.id=d.id_coach");
-// $reqDates->execute();
-// $resu=$reqDates->get_result();
-// $lesdiponibilite=$resu->fetch_all(MYSQLI_ASSOC);
 
-// 
+
+
+
+$dispo = new Disponibilite();
 
 if (isset($_POST["save"])) {
-  if (!empty($_POST["date"]) && !empty($_POST["startTime"]) && !empty($_POST["endTime"])) {
-    $date=$_POST["date"];
-    $startTime=$_POST["startTime"];
-    $endTime=$_POST["endTime"];
-    // INSERER DANS DISPO
-    // si date ou time deja exist
-    // $reqDates=$connect->prepare("SELECT d.* FROM disponibilite d inner join coach c on d.id_coach=? where d.date=? and d.heure_debut=? and d.heure_fin=?");
-    $reqDates=$connect->prepare("SELECT id FROM disponibilite where id_coach=? and date=? and heure_debut=? and heure_fin=?");
 
-    $reqDates->bind_param("isss",$idCoach,$date,$startTime,$endTime);
-    $reqDates->execute();
-    $resu=$reqDates->get_result();
+    if (!empty($_POST["date"]) && !empty($_POST["startTime"]) && !empty($_POST["endTime"])) {
 
-    if ($resu->num_rows===0) {
-        $reqSql=$connect->prepare("INSERT INTO disponibilite(id_coach, date, heure_debut, heure_fin) VALUE(?,?,?,?)");
-        $reqSql->bind_param("isss",$idCoach,$date,$startTime,$endTime);
-        // $reqSql->execute();
-        if ($reqSql->execute()) {
-          header("Location: ./coach-availability.php");
-          exit();
+        if (!$dispo->dispoExist($idCoach, $_POST["date"], $_POST["startTime"], $_POST["endTime"])) {
+
+            $dispo->AjouterDispo($idCoach, $_POST["date"], $_POST["startTime"], $_POST["endTime"]);
+            header("Location: coach-availability.php");
+            exit();
+
+        } else {
+            $erreur = "Ce créneau existe déjà !";
         }
-      }else{
-        $erreur="ce temps est deja exist !";
-      }
 
-  }else{
-    $erreur="tous les champs sont obligatoir";
-  }
+    } else {
+        $erreur = "Tous les champs sont obligatoires";
+    }
 }
-$erreurdelete="";
+
 if (isset($_POST["annuler"])) {
-  $id_dispo= $_POST["annuler"];
-  // 
-  $reqifixist=$connect->prepare("SELECT COUNT(*) as count FROM reservation WHERE id_disponibilite = ?");
-  $reqifixist->bind_param("i",$id_dispo);
-  $reqifixist->execute();
-  $virifier=$reqifixist->get_result()->fetch_assoc();
-
-  // if ($virifier['count'] > 0) {
-          // $erreurdelete = "Impossible de supprimer, cette disponibilité est déjà réservée !";
-      
-    // Supprimer les reservation lier a dispo
-    $deleteReservations = $connect->prepare("DELETE FROM reservation WHERE id_disponibilite=?");
-    $deleteReservations->bind_param("i",$id_dispo);
-    $deleteReservations->execute();
-
-    // Supprimer la disponibilité
-    
-    $reqSql=$connect->prepare("DELETE FROM disponibilite WHERE id=?");
-    $reqSql->bind_param("i",$id_dispo);
-    $reqSql->execute();
+    $dispo->supprimer((int)$_POST["annuler"]);
     header("Location: coach-availability.php");
     exit();
-  }
-// }
+}
+
+
+
+$disponibilite = $dispo->AfficherDispoCoach($idCoach);
+
+
+
+
+
+$erreur=""; 
+
 
 ?>
 <!DOCTYPE html>
@@ -91,7 +62,7 @@ if (isset($_POST["annuler"])) {
 <body>
 <?php
 // C:\laragon\www\FitCoach-Pro\Pages\components\header.php
-require('/FitCoach-Pro/Pages/components/header.php');
+require('./components/header.php');
 ?>
 <div class="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto my-8">
   <h2 class="text-xl font-bold mb-4 text-gray-800">Ajouter une disponibilité</h2>
@@ -127,13 +98,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
 <h3 class="font-semibold text-gray-700 mt-6 mb-2 text-center">Disponibilités actuelles</h3>
   <!-- table -->
     <?php
-    $sql=$connect->prepare("SELECT * FROM disponibilite
-    where id_coach=?");
-    $sql->bind_param("i",$idCoach);
     
-    $sql->execute();
-    $resul=$sql->get_result();
-    $disponibilite=$resul->fetch_all(MYSQLI_ASSOC);
     ?>
    <table class="divide-y divide-gray-200" style="margin:auto;min-width:54em;">
       <thead class="bg-gray-50">
@@ -178,7 +143,7 @@ require('/FitCoach-Pro/Pages/components/header.php');
       </tbody>
     </table>
 <?php
-require('/FitCoach-Pro/Pages/components/footer.php');
+require('./components/footer.php');
 ?>
 <script>
 

@@ -32,29 +32,28 @@ class Disponibilite{
     public function getDisponible(){return $this->disponible;}
     public function setDisponible($disponible){$this->disponible=$disponible;}
 
-    // public function setIdCoach($id_coach){
-//     $this->id_coach = $id_coach;
-// }
-    // id du coach
-    public function AjouterDispo($id_coach){
-        $req1 = $this->pdo->prepare("INSERT INTO disponibilite (idcoach, date, heure_debut, heure_fin,disponible) VALUES(?,?,?,?,?)");
-        $req1->execute([
-            $id_coach,
-            $this->date,
-            $this->heure_debut,
-            $this->heure_fin,
-            1
-        ]);
-        $idDispo = $this->pdo->lastInsertId();
-        return $idDispo;
-    }
+ 
+
+    public function AjouterDispo($idCoach, $date, $debut, $fin): bool {
+    $req = $this->pdo->prepare(
+        "INSERT INTO disponibilite (id_coach, date, heure_debut, heure_fin, disponible)
+         VALUES (?,?,?,?,1)"
+    );
+    return $req->execute([$idCoach, $date, $debut, $fin]);
+}
+
+
+
     public function ModifierDispo(int $idDispo){
-        $req2 = $this->pdo->prepare("UPDATE disponibilite set date=?, heure_debut=?, heure_fin=? where id=?");
+      $disponible = 0;
+        $req2 = $this->pdo->prepare("UPDATE disponibilite set disponible=? where id_coach=? and date=? and heure_debut=? and heure_fin=?");
+        // 
         $req2->execute([
+            $disponible,
+            $this->idcoach,
             $this->date,
             $this->heure_debut,
             $this->heure_fin,
-            $idDispo
         ]);
 
     }
@@ -64,24 +63,65 @@ class Disponibilite{
         $reqSelect->execute([]);
         return $reqSelect->fetchAll(PDO::FETCH_ASSOC);
 
-        // return
     }
-    public function supprimerDispo($id){
-        $reqDelete=$this->pdo->prepare("DELETE from disponibilite where id=?");
-        $reqDelete->execute([
-            $id
-        ]);
-    }
+   
+    // supprimer dispo + reservations
+    public function supprimer($idDispo) {
+        $req1=$this->pdo->prepare(
+            "DELETE FROM reservation WHERE id_disponibilite=?"
+        );
+        $req1->execute([$idDispo]);
 
+        $req2=$this->pdo->prepare(
+            "DELETE FROM disponibilite WHERE id=?"
+        );
+        $req2->execute([$idDispo]);
+    }
+    // 
     public function ModifierStatusDispo($id){
         $reqDelete=$this->pdo->prepare("UPDATE disponibilite set disponible = 0 where id=?");
         $reqDelete->execute([
             $id
         ]);
     }
+    
 
+
+    public function dispoDuCeCoach(int $idCoach) {
+        $req = $this->pdo->prepare("SELECT * FROM disponibilite WHERE id_coach=? AND disponible=1");
+        $req->execute([$idCoach]);
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     
+    public function reserverDispo(int $idDispo) {
+        $req = $this->pdo->prepare("UPDATE disponibilite SET disponible=0 WHERE id=?");
+        return $req->execute([$idDispo]);
+    }
+
+
+
+
+
+    // verifier si dispo exist
+    public function dispoExist($idCoach,$date,$debut,$fin){
+        $req = $this->pdo->prepare("SELECT id FROM disponibilite 
+             WHERE id_coach=? AND date=? AND heure_debut=? AND heure_fin=?"
+        );
+        $req->execute([$idCoach, $date, $debut, $fin]);
+        return $req->fetch() !== false;
+    }
+
+
+    // afficher dispo coach
+    public function AfficherDispoCoach( $idCoach) {
+        $req = $this->pdo->prepare(
+            "SELECT * FROM disponibilite WHERE id_coach=?"
+        );
+        $req->execute([$idCoach]);
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+ 
 
 
 }

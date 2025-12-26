@@ -72,29 +72,8 @@ class Coach extends User{
         // }
         // return false;
     }
-    // public function virifierProfilCoach(int $id){
-    //     $req=$this->pdo->prepare("SELECT * FROM coach c INNER JOIN users u ON u.id=c.id_user WHERE c.id_user=? ");
-    //     // erreur => 0 dans experience 😒😒
-    //     // experience_en_annee=0 and 
-    //     $req->execute([
-    //         $id
-    //     ]);
-    //     $test=$req->fetch(PDO::FETCH_ASSOC);
-    //     // echo "dxcf";
-    //     if ($test) {
-    //         // echo $test["nom"];
-    //         return $test["id"];
-    //     }
-        
-    //     // else{
-    //         //     echo 'non trouver';
-    //         // }
-            
-    //     }
     public function leCoachConne(int $id){
         $req=$this->pdo->prepare("SELECT * FROM coach  WHERE id_user=?");
-        // erreur => 0 dans experience 😒😒
-        // experience_en_annee=0 and 
         $req->execute([
             $id
         ]);
@@ -105,9 +84,6 @@ class Coach extends User{
             return $test["id"];
         }
         
-        // else{
-            //     echo 'non trouver';
-            // }
             
         }
         public function updateProfilCoach(int $idUser, int $experience, string $bio, float $prix, string $photo){
@@ -126,19 +102,12 @@ class Coach extends User{
         $req->execute([$spec]);
         $test = $req->fetch(PDO::FETCH_ASSOC);
 
-        // if ($test) {
+        
             $spec_id = $test['id'];
-        // } else {
             $req1 = $this->pdo->prepare("INSERT INTO specialite (nom_specialite) VALUES(?)");
             $req1->execute([$spec]);
             $spec_id = $this->pdo->lastInsertId();
-        // }
-        // $req=$this->pdo->prepare("INSERT INTO specialite (nom_specialite) VALUES(?)");
-        // $req->execute([
-        //     $spec
-        // ]);
-        // $spec_id=$this->pdo->lastInsertId();
-
+        
         // remlpir table associ
         $req1=$this->pdo->prepare("INSERT into specialite_coach(id_coach, id_specialite) VALUES(?,?)");
         $req1->execute([
@@ -159,25 +128,8 @@ public function saveCertif(){
     }
 }
 
-// id du coach inserer
-// public function CoachConnId(int $userid){
-//     $req=$this->pdo->prepare("SELECT id FROM coach WHERE id_user=?");
-//     $req->execute([
-//         $userid        
-//     ]);
-
-//     $res1=$req->fetch(PDO::FETCH_ASSOC);
-//     // echo $res1["id"];
-//     if ($res1) {
-//         $coachId=$this->coach_id = $res1['id'];
-//         return $coachId;
-        
-//     }
-//     return false;
-// }
 
 public function virifierSiCoachCompleterProfil(int $userid){
-    // $req=$this->pdo->prepare("SELECT id FROM coach WHERE id_user=?");
     $req=$this->pdo->prepare("SELECT experience_en_annee FROM coach WHERE id_user=?");
     $req->execute([
         $userid        
@@ -186,9 +138,7 @@ public function virifierSiCoachCompleterProfil(int $userid){
     $res1=$req->fetch(PDO::FETCH_ASSOC);
     // echo $res1["id"];
     if ($res1['experience_en_annee']!== null){
-        // $coachId=$this->coach_id = $res1['id'];
         return true;
-        // return true;
     }
     return false;
 }
@@ -240,6 +190,74 @@ $reqCertif->execute([
 }
 
 
+//  statistique
+    public function nbrReservationEnAttente($idCoach) {
+        $req = $this->pdo->prepare(
+            "SELECT COUNT(*) as nbr FROM reservation WHERE id_coach=? AND status='en_attente'"
+        );
+        $req->execute([$idCoach]);
+        return $req->fetch();
+    }
+// les seance accepter ce jour 
+public function nrbReseValide($idCoach){
+    $req=$this->pdo->prepare("SELECT count(*) as nbr from reservation where id_coach=? and status='accepter' and date=CURDATE()");
+    $req->execute([$idCoach]);
+    return $req->fetch();
+}
+
+// 
+
+public function nbrResDemain($idCoach) {
+        $req = $this->pdo->prepare(
+            "SELECT COUNT(*) as nbr FROM reservation 
+             WHERE id_coach=? AND status='accepter' 
+             AND date=CURDATE() + INTERVAL 1 DAY"
+        );
+        $req->execute([$idCoach]);
+        return $req->fetch();
+    }
+
+    
+    public function prochaineRese($idCoach) {
+        $req = $this->pdo->prepare(
+            "SELECT r.*, u.email FROM reservation r inner join client c ON c.id = r.id_client
+             inner join users u ON u.id = c.id_user WHERE r.id_coach=? AND r.date>=CURDATE()
+             ORDER BY r.date, r.heure_debut 
+             LIMIT 1"
+        );
+        $req->execute([$idCoach]);
+        return $req->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+
+    public function afficherProfil($idUser) {
+    // le coach et leur specialite
+    $req = $this->pdo->prepare("SELECT c.*,GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') as specialite from coach c 
+    inner join specialite_coach sc on sc.id_coach=c.id 
+    inner join specialite s on s.id=sc.id_specialite where id_user=? 
+    group by c.id
+    ");
+    $req->execute([$idUser]);
+    $coach = $req->fetch(PDO::FETCH_ASSOC);
+    $idC=$coach['id'];
+    // Certifications
+    $reqCertif = $this->pdo->prepare("SELECT group_concat(nom_certif separator ',') as nom_certif,group_concat(annee separator ',') 
+                          as annee,group_concat(etablissement separator ',') as etablissement  from certification 
+                          where id_coach=?
+                          group by id_coach");
+
+    $reqCertif->execute([$idC]);
+    $certif = $reqCertif->fetch(PDO::FETCH_ASSOC);
+
+   
+    $coach['nom_certif'] = isset($certif['nom_certif']) ? $certif['nom_certif'] : '';
+    $coach['annee'] = isset($certif['annee']) ? $certif['annee'] : '';
+    $coach['etablissement']= isset($certif['etablissement']) ? $certif['etablissement'] : '';
+
+
+    return $coach;
+}
 
 
 }

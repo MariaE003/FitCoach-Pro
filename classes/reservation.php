@@ -2,10 +2,7 @@
 require_once __DIR__ .  '/../dataBase/Connect.php';
 
 class Reservation{
-    /* 
     
-    reservation (id_client, id_coach, id_disponibilite, heure_debut, heure_fin, objectif, date, status)
-    */
     private $id; 
     private $id_client;
     private $id_coach;
@@ -107,6 +104,65 @@ class Reservation{
         $reqDelete->execute([
             $id
         ]);
+    }
+
+
+    public function afficherDetailReser($id_coach1){
+        $statusEnAttent="en_attente";
+
+        $req=$this->pdo->prepare("SELECT c.nom,c.prenom,c.prix,c.photo,cl.nom as 'nomClient',cl.prenom as 'prenomClient',r.* FROM reservation r 
+        inner join coach c on  r.id_coach=c.id
+        inner join client cl on  r.id_client=cl.id
+        where c.id=? and r.status=?");
+        $req->execute([$id_coach1,$statusEnAttent]);
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+
+
+    }
+
+
+
+
+
+    // annuler
+    public function annulerReservation($idReservation,$idCoach) {
+
+        $status = "annuler";
+        $req = $this->pdo->prepare("UPDATE reservation SET status = ?  WHERE id = ? AND id_coach = ?");
+
+        if (!$req->execute([$status, $idReservation, $idCoach])) {
+            return false;
+        }
+
+        $reqInfo = $this->pdo->prepare("SELECT id_coach, date, heure_debut, heure_fin FROM reservation  WHERE id = ?");
+        $reqInfo->execute([$idReservation]);
+        $info = $reqInfo->fetch(PDO::FETCH_ASSOC);
+
+        if (!$info) {
+            return false;
+        }
+
+        // update disponible 1
+        $disponible = 1;
+        $reqDispo = $this->pdo->prepare("UPDATE disponibilite  SET disponible = ? WHERE id_coach = ? AND date = ? AND heure_debut = ? AND heure_fin = ?");
+
+        return $reqDispo->execute([
+            $disponible,
+            $info['id_coach'],
+            $info['date'],
+            $info['heure_debut'],
+            $info['heure_fin']
+        ]);
+    }
+
+    // accepter
+    public function accepterReservation($idReservation, $idCoach) {
+        $status = "accepter";
+        $req = $this->pdo->prepare(
+            "UPDATE reservation SET status = ? WHERE id = ? AND id_coach = ?"
+        );
+
+        return $req->execute([$status, $idReservation, $idCoach]);
     }
 
 

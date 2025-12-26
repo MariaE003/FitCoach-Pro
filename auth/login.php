@@ -7,13 +7,6 @@ require '../classes/Coach.php';
 $erreur="";
 
 
-// require "../connect.php";
-
-//     $User1=new User();
-// $_SESSION["user_id"]=$User1->getId();
-//         echo $_SESSION["user_id"];
-//         $_SESSION["role"]=$User1->getRole();
-
 if (isset($_POST["Seconnecter"])) {
 
 //   #vilider les champs
@@ -31,42 +24,11 @@ if (isset($_POST["Seconnecter"])) {
 
     $_SESSION["user_id"] = $User->getId();
     $_SESSION["role"]    = $User->getRole();
-    // $User->login($email,$password);
-    // 
-
-//     // $passwordHasher=password_hash($password,PASSWORD_BCRYPT);
-
-//     $sqlRequette=$connect->prepare("SELECT * FROM users WHERE email=?");
-//     $sqlRequette->bind_param("s",$email);
-//     $sqlRequette->execute();
-
-//     //prendre les resultat
-//     $Result=$sqlRequette->get_result();
-
-
-//     if ($Result->num_rows==1) {
-//       $user=$Result->fetch_assoc();
-//       if (password_verify($password,$user['password'])) {
-//         $_SESSION["user_id"]=$user['id'];
 
 
 
-        // echo $_SESSION["role"];
-        // $role=$_SESSION["role"];
-        // echo $role;
-        
-        // $req=$User->pdo->prepare("SELECT c.experience_en_annee FROM coach c
-        // INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee IS NULL and u.id=?
-        // ");
-        // $req->execute([
-        //   $User->getId()
-        // ]);
-        // $test=$req->fetch(PDO::FETCH_ASSOC);
+
         $coach=new Coach();
-        // $test=$coach->virifierProfilCoach($User->getId());
-        // echo $test;
-    // if ($test){
-          // print_r( $test["experience_en_annee"]);
           if ($_SESSION["role"]==="coach"){
             if ($coach->virifierSiCoachCompleterProfil( $_SESSION["user_id"])) {
             header("Location: /FitCoach-Pro/index.php");
@@ -77,52 +39,15 @@ if (isset($_POST["Seconnecter"])) {
             exit();
           }
 
-          // if($role==="client"){
-          //   header("Location:  /FitCoach-Pro/index.php");
-          //   exit();
-          // }
-          
-        // }
-        
-        // if ($user['role']==="coach"){
-        //   if (!$coach->verifierSiCoachCompleterProfil($User->getId())) {
-        //     header("Location: /FitCoach-Pro/index.php");
-        //     exit();
-        //   }
-        //   header("Location: /FitCoach-Pro/auth/addProfilCoach.php");
-        //   exit();
-        // }
-        // $idDuUser=$_SESSION["user_id"];
-        // $coach=new Coach();
-        // $test1=$coach->virifierSiCoachCompleterProfil($User->getId());
-
-        // if($test1===false){
-        //   header("Location: /FitCoach-Pro/index.php");
-        //   exit();
-        // }
-        // 
-        
-
-        // 
-        // si le role est coach il Doit completer leur profil SI IL NA PAS COMPLETER ENCOR
 
         header("Location: /FitCoach-Pro/index.php");
         exit();
       }
         }
-    //   else{
-    //     $erreur="mot de passe incorrect !";
-    //   }
-    // }else{
-    //     $erreur="email incorrect !";
-    // }    
-  // }
+
 
 }
-// $coach=new Coach();
-// $User=new User();
-// $test1=$coach->virifierSiCoachCompleterProfil($User->getId());
-//       var_dump($test1);
+
 
 
 

@@ -35,11 +35,6 @@ class User{
         return $req1->fetch(PDO::FETCH_ASSOC) !== false;
     }
 
-    /* 
-    if ($this->emailExists($this->email)) {
-        throw new Exception("Cet email est déjà utilisé !");
-    }
-    */
     
     // insert
     function register(){
@@ -84,25 +79,7 @@ class User{
 
             return false;
         }
-        // else{
-        //     $SESSION["user_id"]=$user['id'];
-        //     $SESSION["role"]=$user['role'];
-
-        //     $req=$this->pdo->prepare("SELECT c.experience_en_annee FROM coach c
-        //     INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee IS NULL
-        //     ");
-        //     if($user['role']==="coach" && $req->execute()){
-        //         header("Location: ../Pages/addProfilCoach.php");
-        //         exit();
-        //     }
-        //     // else{
-        //         // password in correct
-        //     // }
-        // }
-        // else {
-            // email inncorect
-        // }
-
+        
         // remplir lobjet from db
         $this->id=$user["id"];
         $this->email=$user["email"];
@@ -113,9 +90,7 @@ class User{
 
 
     }
-    // public function modifierProfil(){
     
-    // }
 
 }
 

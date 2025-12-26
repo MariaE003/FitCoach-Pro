@@ -1,6 +1,5 @@
 <?php
-// require_once './dataBase/connect.php';
-// $pdo=DataBase::connect();
+
 require './session.php';//nb
 require './classes/User.php';
 

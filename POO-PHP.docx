@@ -1,0 +1,26 @@
+
+Introduction à la Programmation Orientée Objet en PHP
+
+1. Fondements de la Programmation Orientée Objet (POO)
+
+La POO est une façon d'écrire du code qui organise les données et les fonctionnalités dans des objets.
+
+- Une classe est comme un plan ou un modèle qui contient des propriétés (variables) et des méthodes (fonctions).
+- Un objet est une instance d'une classe, c'est-à-dire un élément concret basé sur ce modèle.
+
+
+2. Encapsulation et Modificateurs d'Accès
+
+L'encapsulation consiste à protéger les données d'une classe et à contrôler leur visibilté en utilise :
+
+* public : accessible partout (à l'intérieur et à l'extérieur de la classe)
+* private : accessible seulement à l'intérieur de la classe
+* protected : accessible dans la classe et ses classes filles
+
+
+3. Héritage et Polymorphisme
+
+- L'héritage permet à une classe d'utiliser les propriétés et méthodes d'une autre classe.
+- Le polymorphisme permet à une classe enfant de modifier ou de redéfinir le comportement d'une méthode héritée de la classe parent.
+
+

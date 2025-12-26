@@ -52,16 +52,7 @@ if (isset($_POST["inscrir"])) {
         $coach->setNom($lastName);
         $coach->setPrenom($firstname);
         $coach->setTelephone($phone);
-        // $coach->registerCoach();
-        // $coach->setPassword($password);
-        // $coach->setEmail($email);
-
-        // $coach->setAnneeExperience();
-        // $coach->setBio();
-        // $coach->setPrix();
-        // $coach->setPhoto();
-        // $coach->setSpecialite();
-        // $coach->setcertif();
+       
 
         $coach->registerCoach($id);
       }
@@ -71,25 +62,7 @@ if (isset($_POST["inscrir"])) {
 
 
     }
-    // $sqlRequette=$connect->prepare("INSERT INTO users(email, password, role) VALUES (?,?,?)");
-    // $sqlRequette->bind_param("sss",$email,$passwordHasher,$role);
-    // $sqlRequette->execute();
-
-    // if ($sqlRequette->execute()){
-    //   // $userId=$connect->insert_id;
-    //   if ($role==="client") {
-    //   $sqlRequetteClient=$connect->prepare("INSERT INTO client(id_user, nom, prenom, telephone,email) VALUES (?,?,?,?,?)");
-    //   $sqlRequetteClient->bind_param("sssss",$id,$lastName,$firstname,$phone,$email);
-    //   $sqlRequetteClient->execute();
-    // }
-    // if ($role==="coach") {
-    //   $sqlRequetteClient=$connect->prepare("INSERT INTO coach(id_user, nom, prenom, telephone) VALUES (?,?,?,?)");
-    //   $sqlRequetteClient->bind_param("ssss",$id,$lastName,$firstname,$phone);
-    //   $sqlRequetteClient->execute();
-    // }
-    // header("Location:login.php");
-    // exit();
-    // }
+    
 
   }
 }
@@ -237,11 +210,7 @@ require('../Pages//components/footer.php');
     setupPasswordToggle('togglePassword', 'password');
     setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
 
-    // Form submission (dummy)
-    // document.getElementById('registerForm').addEventListener('submit', function(e) {
-    //   e.preventDefault();
-    //   alert('Inscription réussie !');
-    // });
+   
 
     let firstName=document.getElementById('firstName');
     let lastName=document.getElementById('lastName');

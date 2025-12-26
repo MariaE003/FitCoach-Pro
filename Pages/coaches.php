@@ -9,11 +9,6 @@ require '../classes/Coach.php';
 $coachObj = new Coach();
 $coachs = $coachObj->tousCoach();
 
-// affichage
-// foreach($coachs as $coa){
-//     echo $coa['nom'].' '.$coa['prenom'].' - '.$coa['specialite'].'<br>';
-// }
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -44,7 +39,7 @@ $coachs = $coachObj->tousCoach();
 
 <!-- NAVBAR -->
 <?php
-// require('/FitCoach-Pro/Pages/components/header.php');
+require('../Pages/components/header.php');
 
 ?>
 
@@ -111,11 +106,6 @@ $coachs = $coachObj->tousCoach();
             echo $coa["specialite"];
           ?>
         </p>
-        
-
-        <!-- <div class="flex items-center gap-2 text-yellow-400 mb-4">
-          ★★★★★ <span class="text-gray-500 text-sm">(124 avis)</span>
-        </div> -->
 
         <div class="flex justify-between text-sm text-gray-500 mb-4">
           <span><i class="fas fa-clock"></i> <?= $coa['experience_en_annee']?></span>
@@ -143,7 +133,7 @@ $coachs = $coachObj->tousCoach();
 
 <!-- FOOTER -->
 <?php
-// require('/FitCoach-Pro/Pages/components/footer.php');
+require('../Pages/components/footer.php');
 
 ?>
 

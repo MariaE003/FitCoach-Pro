@@ -1,7 +1,5 @@
 <?php
-
 require '../session.php';
-// require_once __DIR__ .  '/FitCoach-Pro/Pages/Mes-reservations.php';
 require '../classes/Reservation.php';
 require '../classes/Coach.php';
 require '../classes/client.php';
@@ -9,13 +7,12 @@ require '../classes/client.php';
 $idUser = $_SESSION["user_id"];
 $role = $_SESSION["role"];
 
-// récupérer id client à partir de la table client
+// id client
 $client = new Client();
-$id_client = $client->leClientConne($idUser); // méthode qui retourne l'id du client
+$id_client = $client->leClientConne($idUser); 
 
 $reservationObj = new Reservation();
 $reservations = $reservationObj->affichierReservation($id_client);
-
 
 
 ?>
@@ -47,7 +44,7 @@ $reservations = $reservationObj->affichierReservation($id_client);
 
 <!-- NAV -->
 <?php
-// require __DIR__ .'/FitCoach-Pro/Pages/components/header.php' ;
+require '../Pages/components/header.php' ;
 ?>
 
 <!-- CONTENT -->
@@ -69,16 +66,7 @@ $reservations = $reservationObj->affichierReservation($id_client);
       <tbody class="bg-white divide-y divide-gray-200">
          <?php
     
-  //     echo "Date: " . $res["date"] . "<br>";
-  //     echo "Heure début: " . $res["heure_debut"] . "<br>";
-  //     echo "Heure fin: " . $res["heure_fin"] . "<br>";
-  //     echo "Coach: " . $res["prenom"] . " " . $res["nom"] . "<br>";
-  //     echo "Prix: " . $res["prix"] . " DH<br>";
-  //     echo "Statut: " . $res["status"] . "<hr>";
-  //   }
-  // } else {
-  //   echo "Aucune réservation disponible pour le moment.";
-  // }
+ 
   if ($reservations && count($reservations) > 0) {
          foreach ($reservations as $reser) {
         
@@ -92,7 +80,7 @@ $reservations = $reservationObj->affichierReservation($id_client);
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"><?=$reser["status"]?></span>
           </td>
           <td class="px-6 py-4 text-center space-x-2">
-            <button data-date="<?=$reser["date"]?>" data-name="<?=$reser["prenom"]." ".$reser["nom"] ?>" data-start="<?=$reser["heure_debut"]?>" data-end="<?=$reser["heure_fin"]?>" data-status="<?=$reser["status"]?>" data-prix="<?=$reser["prix"]?>"
+            <button data-id="<?=$dispo['id']?> data-date="<?=$reser["date"]?>" data-name="<?=$reser["prenom"]." ".$reser["nom"] ?>" data-start="<?=$reser["heure_debut"]?>" data-end="<?=$reser["heure_fin"]?>" data-status="<?=$reser["status"]?>" data-prix="<?=$reser["prix"]?>"
             data-objectif="<?=$reser["objectif"]?>" data-photo="<?=$reser["photo"]?>" class="text-blue-500 hover:text-blue-700 open-modal" title="Détails">
             <i class="fas fa-eye"></i>
           </button>
@@ -137,7 +125,7 @@ $reservations = $reservationObj->affichierReservation($id_client);
 <!--  -->
 
 <?php
-// require('/FitCoach-Pro/Pages/components/footer.php');
+require('../Pages/components/footer.php');
 
 ?>
 </body>

@@ -64,7 +64,7 @@ if ($idcoach) {
 
 <!-- NAVBAR -->
 <?php
-// require('/FitCoach-Pro/Pages/components/header.php');
+require('../Pages/components/header.php');
 
 
 // foreach($profil as $prof){
@@ -176,14 +176,6 @@ if ($idcoach) {
           <?php
           }
           ?>
-
-        <!-- <li class="flex gap-4">
-          <i class="fas fa-check-circle text-accent text-xl"></i>
-          <div>
-            <strong>Préparateur Physique</strong>
-            <p class="text-gray-500 text-sm">IRFC – 2018</p>
-          </div>
-        </li> -->
       </ul>
     </div>
 
@@ -222,7 +214,7 @@ if ($idcoach) {
 }else{
   header("Location: ./index.php");
 }
-// require('/FitCoach-Pro/Pages/components/footer.php');
+require('../Pages/components/footer.php');
 
 ?>
 
