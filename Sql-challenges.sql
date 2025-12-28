@@ -50,7 +50,7 @@ left JOIN reservations r ON r.seance_id=s.id
 WHERE s.coach_id is null or s.date_seance< curdate() - INTERVAL 60 day and r.reserved_at< curdate()-INTERVAL 60 day;
 
 Challenge 5:
-/*  */
+/* faux */
 SELECT c.user_id,COUNT(*) as topcoach from coachs c
 INNER JOIN seances s on s.coach_id=c.user_id
 INNER JOIN reservations r on s.id=r.seance_id
