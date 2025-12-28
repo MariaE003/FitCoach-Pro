@@ -38,3 +38,24 @@ and se1.heure<date_add(se2.heure,interval se2.duree minute)
 and se2.heure<date_add(se1.heure,interval se1.duree minute)
 
 Challenge 4:
+/*  */
+SELECT DISTINCT s.coach_id,s.date_seance FROM coachs c
+LEFT JOIN seances s on s.coach_id=c.user_id
+WHERE s.coach_id is null or s.date_seance< curdate() - INTERVAL 60 day
+
+/*  */
+SELECT DISTINCT s.coach_id,s.date_seance FROM coachs c
+left JOIN seances s on s.coach_id=c.user_id
+left JOIN reservations r ON r.seance_id=s.id
+WHERE s.coach_id is null or s.date_seance< curdate() - INTERVAL 60 day and r.reserved_at< curdate()-INTERVAL 60 day;
+
+Challenge 5:
+/*  */
+SELECT c.user_id,COUNT(*) as topcoach from coachs c
+INNER JOIN seances s on s.coach_id=c.user_id
+INNER JOIN reservations r on s.id=r.seance_id
+GROUP by c.user_id
+ORDER BY topcoach DESC
+LIMIT 3
+/*  */
+
